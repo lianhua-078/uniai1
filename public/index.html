@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f7f7fb">
+<meta name="description" content="UniAi 是大學生的 AI 學習導航員，提供任務流程、Prompt 產生、AI 即時回答與結果查證。">
+<meta name="author" content="Xueerlian">
+<title>UniAi</title>
+<style>
+:root{
+ --bg:#f7f7fb;--surface:#fff;--surface2:#f1f0ff;--ink:#202238;--muted:#6d7086;
+ --line:#e5e5ef;--primary:#6558d9;--primary2:#5144c4;--mint:#dff7ed;--green:#167b5b;
+ --peach:#fff0e5;--blue:#e8f2ff;--shadow:0 12px 35px rgba(38,35,85,.07);--radius:20px;
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+a{color:var(--primary);text-decoration:none}a:hover{text-decoration:underline}
+.topbar{height:74px;display:flex;align-items:center;justify-content:space-between;padding:0 max(22px,calc((100vw - 1180px)/2));background:rgba(255,255,255,.9);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;backdrop-filter:blur(12px)}
+.brand{display:flex;align-items:center;gap:11px;font-weight:850;font-size:21px;letter-spacing:-.6px}.logo{width:40px;height:40px;border-radius:14px;background:linear-gradient(135deg,#7668ed,#a59aff);color:white;display:grid;place-items:center;font-size:22px;box-shadow:0 7px 18px #6558d933}
+.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:.6px;font-weight:700;text-transform:uppercase;margin-top:-3px}
+.nav{display:flex;gap:5px}.nav button{border:0;background:transparent;color:var(--muted);padding:10px 13px;border-radius:12px;font-weight:700}.nav button.active,.nav button:hover{background:var(--surface2);color:var(--primary)}
+.wrap{max-width:1180px;margin:auto;padding:0 22px}
+.hero{padding:54px 0 30px;display:grid;grid-template-columns:1.25fr .75fr;gap:28px;align-items:center}
+.eyebrow{color:var(--primary);font-weight:800;font-size:12px;letter-spacing:1.3px;text-transform:uppercase;display:flex;gap:8px;align-items:center}
+h1{font-size:clamp(34px,4.5vw,55px);line-height:1.08;letter-spacing:-2px;margin:15px 0 18px;max-width:700px}
+.gradient{background:linear-gradient(100deg,#5c4dd0,#9274ea);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:17px;color:var(--muted);max-width:650px;margin:0 0 24px}
+.btn{border:0;border-radius:13px;padding:12px 17px;background:var(--primary);color:#fff;font-weight:800;box-shadow:0 7px 16px #6558d925;transition:.15s}.btn:hover{background:var(--primary2);transform:translateY(-1px)}.btn.secondary{background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:none}.btn.soft{background:var(--surface2);color:var(--primary);box-shadow:none}.btn.small{padding:8px 11px;font-size:13px;border-radius:10px}
+.hero-card{border-radius:26px;background:#24233b;color:#fff;padding:25px;box-shadow:var(--shadow);position:relative;overflow:hidden;min-height:270px}.hero-card:after{content:"";position:absolute;width:220px;height:220px;border:35px solid #ffffff0b;border-radius:50%;right:-65px;top:-70px}
+.hero-card h3{font-size:21px;margin:12px 0}.hero-card p{color:#c9c9dc;margin:0}.flow-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:23px;position:relative;z-index:1}.flow-mini div{background:#ffffff12;border:1px solid #ffffff18;border-radius:13px;padding:12px 9px;font-size:12px}.flow-mini b{display:block;font-size:15px;margin-bottom:4px}.flow-mini span{color:#c9c9dc}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:14px 0 44px}.stat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px}.stat b{font-size:21px;display:block}.stat span{font-size:13px;color:var(--muted)}
+.section{padding:26px 0 42px;scroll-margin-top:90px}.section-head{display:flex;justify-content:space-between;align-items:end;gap:15px;margin-bottom:20px}.section-head h2{font-size:28px;letter-spacing:-.7px;margin:5px 0}.section-head p{color:var(--muted);margin:0}.kicker{color:var(--primary);font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:1px}
+.layout{display:grid;grid-template-columns: .85fr 1.15fr;gap:20px;align-items:start}.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:23px;box-shadow:var(--shadow)}.panel h3{margin:0 0 6px;font-size:19px}.sub{color:var(--muted);font-size:13px;margin:0 0 18px}
+.field{margin:14px 0}.field label{display:block;font-weight:750;font-size:13px;margin-bottom:7px}.field input,.field select,.field textarea{width:100%;border:1px solid #dcddea;border-radius:12px;padding:12px 13px;background:#fff;color:var(--ink);outline:none}.field textarea{min-height:90px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px #6558d91c}
+.task-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.task-option{border:1px solid var(--line);border-radius:14px;padding:12px;text-align:left;background:#fff;display:flex;gap:10px;align-items:flex-start;color:var(--ink);transition:.15s}.task-option:hover{border-color:#aaa2f1}.task-option.selected{border-color:var(--primary);background:#f5f3ff;box-shadow:0 0 0 2px #6558d91a}.task-option .emoji{font-size:22px}.task-option b{display:block;font-size:13px}.task-option small{display:block;color:var(--muted);font-size:11px;line-height:1.4;margin-top:2px}
+.recommendation{border-radius:17px;background:linear-gradient(135deg,#f1efff,#f8f7ff);padding:18px;margin:14px 0}.rec-top{display:flex;justify-content:space-between;gap:12px;align-items:center}.pill{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;background:#fff;border:1px solid #e5e1ff;border-radius:99px;color:var(--primary);font-size:11px;font-weight:800}.rec-name{font-size:20px;font-weight:850;margin:8px 0 4px}.rec-desc{color:#575970;font-size:13px}.rec-reason{font-size:13px;margin:12px 0;padding:11px;background:#ffffffa8;border-radius:11px}.tool-links-label{font-size:12px;font-weight:850;color:var(--muted);margin-top:14px}.tool-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.tool-links a{display:inline-block;padding:8px 11px;background:#fff;border:1px solid #e4e2f3;border-radius:10px;font-size:12px;font-weight:750}
+.steps{display:grid;gap:12px}.step{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}.step-head{display:flex;align-items:center;gap:12px;padding:15px 16px;cursor:pointer}.step-num{width:35px;height:35px;border-radius:12px;background:var(--surface2);color:var(--primary);display:grid;place-items:center;font-weight:900;flex-shrink:0}.step.done .step-num{background:var(--mint);color:var(--green)}.step-head b{display:block}.step-head small{color:var(--muted)}.step-head .chevron{margin-left:auto;color:var(--muted)}.step-body{padding:0 17px 18px 63px;display:none}.step.open .step-body{display:block}.step-body p{margin:0 0 10px;color:#555970}.step-body ul{padding-left:19px;margin:8px 0}.example{background:#f8f8fc;border:1px solid var(--line);padding:13px 14px;border-radius:12px;margin:12px 0;font-size:13px}.example strong{display:block;margin-bottom:5px}.tip{background:#eaf8f2;border-left:3px solid #48ad88;padding:11px 13px;border-radius:8px;font-size:13px;margin:12px 0}
+.prompt-layout{display:grid;grid-template-columns:.8fr 1.2fr;gap:20px}.prompt-output{background:#222238;color:#f5f4ff;border-radius:18px;padding:20px;min-height:100%;display:flex;flex-direction:column}.prompt-output .kicker{color:#b9b0ff}.prompt-output h3{margin:7px 0 12px}.prompt-text{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;line-height:1.75;color:#e3e2f5;flex:1;min-height:230px}.prompt-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.prompt-output .btn.secondary{background:#ffffff12;color:white;border-color:#ffffff24}
+.progress-wrap{background:#eeedf7;height:8px;border-radius:99px;overflow:hidden;margin:12px 0 5px}.progress-bar{height:100%;width:0;background:linear-gradient(90deg,#6558d9,#9b8ef7);transition:.2s}.checklist{display:grid;gap:10px}.checkrow{display:flex;gap:11px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff}.checkrow input{accent-color:var(--primary);width:17px;height:17px;margin-top:3px}.checkrow b{display:block;font-size:13px}.checkrow small{display:block;color:var(--muted);font-size:12px}
+.workflow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.workflow-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:17px}.workflow-card .n{font-size:12px;color:var(--primary);font-weight:900}.workflow-card h3{font-size:16px;margin:7px 0}.workflow-card p{font-size:13px;color:var(--muted);margin:0}
+details{border:1px solid var(--line);border-radius:14px;background:#fff;padding:14px 16px;margin:9px 0}summary{cursor:pointer;font-weight:800}details p{color:var(--muted);font-size:13px;margin-bottom:0}
+.footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);font-size:12px;margin-top:15px}.footer-inner{display:flex;justify-content:space-between;gap:20px}
+.toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,20px);opacity:0;background:#24233b;color:white;padding:12px 17px;border-radius:12px;z-index:99;transition:.2s;pointer-events:none;box-shadow:var(--shadow)}.toast.show{opacity:1;transform:translate(-50%,0)}
+.hidden{display:none!important}
+@media(max-width:850px){.hero{grid-template-columns:1fr;padding-top:35px}.hero-card{min-height:auto}.layout,.prompt-layout{grid-template-columns:1fr}.workflow{grid-template-columns:repeat(2,1fr)}.nav button{padding:8px;font-size:12px}.topbar{padding:0 14px}.brand{font-size:18px}.stats{margin-bottom:20px}}
+@media(max-width:520px){.nav{display:none}.wrap{padding:0 14px}.task-grid{grid-template-columns:1fr}.workflow{grid-template-columns:1fr}.stats{grid-template-columns:1fr}.panel{padding:17px}.section-head{display:block}.section-head .btn{margin-top:12px}.step-body{padding-left:17px}.hero h1{letter-spacing:-1.2px}.footer-inner{display:block}}
+
+.ai-shell{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start}
+.ai-chat{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--shadow)}
+.ai-chat-head{padding:18px 20px;background:linear-gradient(135deg,#f0edff,#f3fbf8);border-bottom:1px solid var(--line)}
+.ai-chat-head h3{margin:4px 0}.ai-chat-head p{margin:0;color:var(--muted);font-size:13px}
+.ai-messages{padding:18px;min-height:250px;max-height:520px;overflow:auto;display:flex;flex-direction:column;gap:13px}
+.ai-msg{max-width:94%;padding:13px 15px;border-radius:15px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.7}
+.ai-msg.assistant{background:#f4f3fb;border:1px solid #e8e6f5;align-self:flex-start}.ai-msg.user{background:#6558d9;color:white;align-self:flex-end;white-space:pre-wrap}
+.ai-msg p{margin:0 0 8px}.ai-msg p:last-child{margin-bottom:0}.ai-controls{padding:16px;border-top:1px solid var(--line)}
+.ai-controls textarea{width:100%;resize:vertical;min-height:110px;border:1px solid var(--line);border-radius:13px;padding:12px;background:#fff;color:var(--ink)}
+.ai-control-row{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:10px}.ai-control-row select{flex:1;min-width:180px;border:1px solid var(--line);border-radius:10px;padding:10px;background:white}
+.ai-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.ai-status{font-size:12px;color:var(--muted);margin-top:8px;min-height:18px}
+.ai-side{padding:18px}.ai-side h3{margin-top:0}.ai-side ul{padding-left:18px;color:var(--muted);font-size:13px}.ai-side li{margin:8px 0}.ai-suggestion{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.ai-suggestion button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 10px;font-size:12px;color:var(--ink)}
+@media(max-width:850px){.ai-shell{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+<header class="topbar">
+ <a class="brand" href="#home" style="color:inherit;text-decoration:none"><span class="logo">✦</span><span>UniAi<small>用 AI 學得更聰明</small></span></a>
+ <nav class="nav" aria-label="網站導覽">
+  <button class="active" data-scroll="home">首頁</button><button data-scroll="navigator">任務導航</button><button data-scroll="ai-assistant">AI 助理</button><button data-scroll="promptlab">Prompt 生成</button><button data-scroll="verify">回答驗證</button>
+ </nav>
+ <div style="display:flex;gap:8px;align-items:center"><label for="languageSelect" style="font-size:12px;font-weight:800;color:var(--muted)">語言 / Language</label><select id="languageSelect" aria-label="Select language" style="border:1px solid var(--line);border-radius:10px;padding:8px;background:#fff;color:var(--ink);max-width:145px"><option value="zh">繁體中文</option><option value="vi">Tiếng Việt</option><option value="en">English</option></select><button class="btn small" onclick="goTo('navigator')" data-i18n="startUse">開始使用 ↗</button></div>
+</header>
+<main class="wrap" id="home">
+<section class="hero">
+ <div>
+  <div class="eyebrow">✦ 大學生的 AI 學習導航員</div>
+  <h1>不只是使用 AI。<br><span class="gradient">更要懂得如何善用 AI。</span></h1>
+  <p class="lead">UniAi 協助你依照作業的不同階段選擇合適工具、一步步完成任務、寫出清楚有效的 Prompt，並在繳交前檢查 AI 的回答。</p>
+  <button class="btn" onclick="goTo('navigator')">找到適合的工作流程 <span aria-hidden="true">→</span></button>
+  <button class="btn secondary" onclick="goTo('how')">了解使用方式</button>
+ </div>
+ <div class="hero-card">
+  <span class="pill">為大學生設計</span>
+  <h3>從作業要求到經過查證的成果</h3>
+  <p>沒有一個 AI 工具適合所有任務。先釐清需求，再選擇工具、使用方法並驗證結果。</p>
+  <div class="flow-mini"><div><b>01 · 選擇</b><span>確認目標</span></div><div><b>02 · 執行</b><span>寫好 Prompt</span></div><div><b>03 · 查證</b><span>檢查結果</span></div></div>
+ </div>
+</section>
+<div class="stats">
+ <div class="stat"><b>🎯 依任務推薦</b><span>依照具體目標尋找合適工具</span></div>
+ <div class="stat"><b>🧭 步驟式引導</b><span>知道使用 AI 前、中、後該做什麼</span></div>
+ <div class="stat"><b>🔎 批判思考</b><span>不把 AI 的回答直接當成事實</span></div>
+</div>
+
+<section class="section" id="model-picker">
+ <div class="section-head"><div><div class="kicker">AI MODEL SELECTOR</div><h2 data-i18n="modelTitle">依照任務選擇 AI 模型</h2><p data-i18n="modelIntro">先選擇你的主要需求，查看參考模型、適用情境與使用提醒。</p></div></div>
+ <div class="panel">
+  <div class="field"><label for="modelCategory" data-i18n="modelCategoryLabel">你最需要哪一種能力？</label><select id="modelCategory"><option value="general">綜合能力／複雜任務</option><option value="reasoning">深度推理與研究</option><option value="vision">推理與視覺</option><option value="speed">速度與多模態</option><option value="value">效能與價格平衡</option><option value="context">長文件／長上下文</option><option value="multimodal">圖片、簡報與掃描文件</option><option value="coding">程式開發</option><option value="small">低成本、簡單重複任務</option></select></div>
+  <div id="modelResult" class="recommendation" aria-live="polite"></div>
+  <p class="sub" data-i18n="modelDisclaimer">以下型號與基準數字依照你提供的參考圖片整理，尚未在本網站獨立驗證。模型名稱、排名、價格與 benchmark 會變動，使用前請查看官方資料。</p>
+ </div>
+</section>
+
+<section class="section" id="ai-assistant">
+ <div class="section-head"><div><div class="kicker">02 / AI STUDY ASSISTANT</div><h2>直接向 AI 提問，取得即時回覆</h2><p>輸入作業要求或問題。UniAi 會依照你選擇的模式回答，並協助你理解解題過程。</p></div></div>
+ <div class="ai-shell">
+  <div class="ai-chat">
+   <div class="ai-chat-head"><span class="pill">✦ 透過伺服器連接 AI</span><h3>UniAi 學習助理</h3><p>可以貼上作業要求、文件節錄或具體問題。請勿輸入密碼或個人敏感資訊。</p></div>
+   <div class="ai-messages" id="aiMessages" aria-live="polite"><div class="ai-msg assistant">你好！我可以直接回答問題、逐步引導你解題、改善 Prompt，或檢查一段回答與論證。請先選擇模式，再輸入需求。</div></div>
+   <div class="ai-controls">
+    <div class="ai-control-row"><select id="aiMode" aria-label="AI 回覆模式"><option value="answer">直接回答</option><option value="tutor">逐步教學</option><option value="prompt">改善 Prompt</option><option value="verify">檢查回答／論證</option></select><select id="aiStyle" aria-label="回答風格"><option value="simple">簡單易懂</option><option value="academic">學術、條理清楚</option><option value="concise">簡潔、切中重點</option></select></div>
+    <textarea id="aiInput" placeholder="例如：分析 Netflix 進入印度市場的個案，整理核心問題、案例證據、可能方案與建議……" aria-label="輸入給 AI 的問題"></textarea>
+    <div class="ai-suggestion"><button type="button" data-fill="請用簡單的語言解釋這個概念，再提供一個實際例子：">解釋概念</button><button type="button" data-fill="請依照問題、證據、原因、方案與建議的架構分析以下個案：">分析個案</button><button type="button" data-fill="請幫我改善以下 Prompt，讓目標、背景、輸出格式與評估標準更清楚：">改善 Prompt</button></div>
+    <div class="ai-actions"><button class="btn" id="aiSend">送出問題 ↗</button><button class="btn secondary" id="aiClear">清除對話</button><button class="btn secondary" id="aiCopyLast">複製最近的回答</button></div>
+    <div class="ai-status" id="aiStatus" role="status"></div>
+   </div>
+  </div>
+  <aside class="panel ai-side"><div class="kicker">負責任地使用 AI</div><h3>讓回答更有幫助</h3><ul><li>說明課程、目標與老師的要求。</li><li>提供相關資料，不要只說「幫我做這份作業」。</li><li>請 AI 標示不確定之處，不要捏造來源。</li><li>自己閱讀、查證，再用自己的理解整理內容。</li></ul><div class="tip"><b>提醒</b><br>AI 可能出錯。涉及事實、數據或參考來源時，使用前請獨立查證。</div><p class="sub" style="margin-top:14px">設定好伺服器與有效的 API key 後，這裡才會透過 API 產生 AI 回答。</p></aside>
+ </div>
+</section>
+
+<section class="section" id="navigator">
+ <div class="section-head"><div><div class="kicker">01 / AI TASK NAVIGATOR</div><h2>你現在要完成什麼任務？</h2><p>選擇最接近目前作業需求的任務，UniAi 會提供起步流程與提示範例。</p></div></div>
+ <div class="layout">
+  <div class="panel">
+   <h3>選擇學習任務</h3><p class="sub">你可以隨時更換任務。</p>
+   <div class="task-grid" id="taskGrid">
+    <button class="task-option selected" data-task="case"><span class="emoji">🧩</span><span><b>個案分析</b><small>問題、證據、可行方案</small></span></button>
+    <button class="task-option" data-task="research"><span class="emoji">📚</span><span><b>文獻與資料研究</b><small>找來源、閱讀、整理</small></span></button>
+    <button class="task-option" data-task="slides"><span class="emoji">🖥️</span><span><b>製作簡報</b><small>架構、內容、視覺呈現</small></span></button>
+    <button class="task-option" data-task="video"><span class="emoji">🎬</span><span><b>製作影片／內容</b><small>腳本、畫面、剪輯</small></span></button>
+    <button class="task-option" data-task="data"><span class="emoji">📊</span><span><b>資料分析</b><small>Excel、圖表、解讀</small></span></button>
+    <button class="task-option" data-task="writing"><span class="emoji">✍️</span><span><b>寫作與修改</b><small>大綱、論證、表達</small></span></button>
+    <button class="task-option" data-task="language"><span class="emoji">🌏</span><span><b>翻譯與語言學習</b><small>翻譯、解釋、練習</small></span></button>
+    <button class="task-option" data-task="study"><span class="emoji">🧠</span><span><b>考試複習／理解課程</b><small>解釋、記憶卡、測驗</small></span></button>
+   </div>
+   <div class="field"><label for="assignment">簡述你的作業（選填）</label><textarea id="assignment" placeholder="例如：分析 Netflix 在印度市場的擴張策略……"></textarea></div>
+   <div class="field"><label for="level">你目前進行到哪個階段？</label><select id="level"><option value="start">還不知道如何開始</option><option value="research">正在找資料／研究</option><option value="draft">已經有初稿</option><option value="finish">快完成了，需要檢查</option></select></div>
+   <button class="btn" style="width:100%" id="buildPlan">產生學習流程 →</button>
+  </div>
+  <div class="panel" id="planPanel">
+   <div class="kicker">建議流程</div><h3 id="planTitle">有效分析個案</h3><p class="sub" id="planIntro">先理解問題與證據，再評估可能的解決方案。</p>
+   <div class="recommendation" id="toolRecommendation">
+    <div class="rec-top"><span class="pill">工具參考</span><span class="pill">第 1 步</span></div>
+    <div class="rec-name" id="toolName">ChatGPT</div><div class="rec-desc" id="toolDesc">可協助整理問題、分析架構並比較不同方案。</div>
+    <div class="rec-reason"><b>為什麼適合？</b><br><span id="toolReason">它可以協助你將個案拆成明確步驟；仍需提供實際案例、資料與老師的評分標準。</span></div>
+    <div class="tool-links-label" id="toolLinksLabel">更多 AI 工具（依強項選擇）</div><div class="tool-links" id="toolLinks"><a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">ChatGPT ↗</a><a href="https://www.perplexity.ai/" target="_blank" rel="noopener noreferrer">Perplexity ↗</a></div>
+   </div>
+   <h3 style="font-size:16px;margin-top:18px">建議執行步驟</h3><p class="sub">點開各步驟，查看說明、Prompt 範例，以及你需要自行確認的事項。</p>
+   <div class="steps" id="steps"></div>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="promptlab">
+ <div class="section-head"><div><div class="kicker">02 / PROMPT LEARNING LAB</div><h2>寫出清楚的 Prompt，得到切題的回答</h2><p>填寫左側資訊，UniAi 會組合成有架構、可以直接複製使用的 Prompt。</p></div></div>
+ <div class="prompt-layout">
+  <div class="panel">
+   <h3>建立你的 Prompt</h3><p class="sub">好的 Prompt 不一定要很長，但需要足夠的背景、要求與輸出標準。</p>
+   <div class="field"><label for="pTask">你希望 AI 做什麼？</label><select id="pTask"><option value="個案分析">分析個案</option><option value="搜尋與整理文獻">搜尋與整理文獻</option><option value="規劃簡報大綱">規劃簡報大綱</option><option value="分析資料">分析資料</option><option value="解釋課程概念">解釋課程概念</option><option value="修改初稿">修改初稿</option><option value="撰寫影片腳本">撰寫影片腳本</option><option value="翻譯並解釋術語">翻譯並解釋術語</option></select></div>
+   <div class="field"><label id="pStageLabel" for="pStage">目前進度</label><select id="pStage"><option value="start">我還不知道從哪裡開始</option><option value="work">我正在進行任務</option><option value="improve" selected>我已有草稿，想改善</option><option value="check">我想在提交前檢查</option></select></div>
+   <div class="field"><label id="pApproachLabel" for="pApproach">希望 AI 怎麼協助你？</label><select id="pApproach"><option value="coach" selected>教練：引導我自己思考</option><option value="partner">合作夥伴：一起分析與反駁</option><option value="draft">助理：協助整理初稿</option><option value="review">評審：嚴格檢查與指出問題</option></select></div>
+   <div class="field"><label id="pDepthLabel" for="pDepth">需要的深度</label><select id="pDepth"><option value="simple">簡單易懂</option><option value="detailed" selected>詳細並解釋原因</option><option value="expert">深入分析與批判</option></select></div>
+   <div class="field"><label id="pInteractionLabel" for="pInteraction">互動方式</label><select id="pInteraction"><option value="ask">先問我問題再開始</option><option value="step" selected>一次帶我完成一個步驟</option><option value="deliver">先給結構化成果，再解釋</option></select></div>
+   <div class="field"><label for="pContext">背景／作業要求</label><textarea id="pContext" placeholder="貼上作業要求或說明問題。請勿輸入個人敏感資訊。"></textarea></div>
+   <div class="field"><label for="pRole">希望 AI 扮演什麼角色？</label><input id="pRole" value="具備批判思考能力的大學助教"/></div>
+   <div class="field"><label for="pAudience">回答對象與程度</label><input id="pAudience" value="大學生，基礎程度"/></div>
+   <div class="field"><label for="pFormat">回答格式</label><select id="pFormat"><option>分步驟說明，並加上標題</option><option>以表格整理重點、證據與評論</option><option>包含論點與論據的大綱</option><option>簡短易懂的條列清單</option><option>分段腳本／口白</option></select></div>
+   <div class="field"><label for="pConstraints">需要遵守的條件／評估標準</label><textarea id="pConstraints" placeholder="例如：使用簡單語言、不捏造來源、只依據我提供的資料……">使用清楚易懂的語言。不要捏造數據或參考來源。若資料不足，請先詢問或明確說明假設。</textarea></div>
+   <button class="btn" id="generatePrompt" style="width:100%">產生完整 Prompt ✦</button>
+  </div>
+  <div class="prompt-output">
+   <div class="kicker">你的 PROMPT</div><h3>已準備好，可以複製</h3>
+   <div class="prompt-text" id="promptResult">你是一位具備批判思考能力的大學助教。</div>
+   <div class="prompt-actions"><button class="btn" id="copyPrompt">複製 Prompt</button><button class="btn secondary" id="downloadPrompt">下載 .txt</button><button class="btn secondary" id="resetPrompt">重設</button></div>
+   <p style="font-size:12px;color:#b8b7d0;margin:14px 0 0">小提醒：取得 AI 回答後，可以要求它提供證據、標示不確定之處，並反駁自己的結論。</p>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="verify">
+ <div class="section-head"><div><div class="kicker">03 / AI VERIFICATION</div><h2>不要只因為 AI 說得合理就直接繳交</h2><p>每次取得 AI 的結果後，都可以使用這份檢核清單。</p></div></div>
+ <div class="layout">
+  <div class="panel">
+   <h3>回答查證清單</h3><p class="sub">勾選已完成的項目。</p>
+   <div class="progress-wrap"><div class="progress-bar" id="verifyProgress"></div></div><small id="verifyCount" style="color:var(--muted)">已完成 0/7 項</small>
+   <div class="checklist" id="checklist" style="margin-top:16px">
+    <label class="checkrow"><input type="checkbox"><span><b>對照作業要求</b><small>回答是否確實回應問題與老師提出的評分標準？</small></span></label>
+    <label class="checkrow"><input type="checkbox"><span><b>確認事實與數據</b><small>檢查名稱、日期、數字與重要主張。</small></span></label>
+    <label class="checkrow"><input type="checkbox"><span><b>開啟並閱讀原始來源</b><small>連結是否存在？原始來源真的支持引用的說法嗎？</small></span></label>
+    <label class="checkrow"><input type="checkbox"><span><b>尋找相反觀點</b><small>試著尋找反例、反證或其他可能的解釋。</small></span></label>
+    <label class="checkrow"><input type="checkbox"><span><b>區分事實與推論</b><small>標示哪些內容已獲證實、哪些只是 AI 的推測。</small></span></label>
+    <label class="checkrow"><input type="checkbox"><span><b>用自己的理解重新整理</b><small>不看 AI 回答時，你能不能自己解釋這個內容？</small></span></label>
+    <label class="checkrow"><input type="checkbox"><span><b>確認隱私與課程規範</b><small>不要上傳敏感資料，並遵守老師對 AI 使用的規定。</small></span></label>
+   </div>
+   <button class="btn soft" id="resetChecks" style="margin-top:15px">重設檢核清單</button>
+  </div>
+  <div class="panel">
+   <h3>用 Prompt 反向檢查 AI 的回答</h3><p class="sub">把 AI 的回答貼到你正在使用的工具，再附上這段 Prompt。</p>
+   <div class="example"><strong>查證用 Prompt</strong><span id="verifyPrompt">請檢查你剛才的回答，並將內容分成需要來源支持的事實、推論，以及假設或不確定之處。針對每個重要主張，說明應查找哪一類來源。不要捏造連結或引用。指出至少三個可能錯誤、遺漏或有偏誤的地方，並提出獨立查證方法。若資料不足以得出結論，請明確說明。</span></div>
+   <button class="btn" id="copyVerify">複製查證 Prompt</button>
+   <div class="tip"><b>請記得：</b>AI 可能把錯誤資訊說得很有自信。AI 提供的來源仍然需要實際開啟並確認。</div>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="how">
+ <div class="section-head"><div><div class="kicker">04 / STUDY WORKFLOW</div><h2>完成一份作業時，可以怎麼使用 AI？</h2><p>AI 可以協助學習，但你仍然是做決定並對作業負責的人。</p></div></div>
+ <div class="workflow">
+  <div class="workflow-card"><div class="n">STEP 01</div><div style="font-size:25px">🎯</div><h3>理解作業要求</h3><p>標記題目中的要求動詞、繳交內容、評分標準，以及課程對使用 AI 的限制。</p></div>
+  <div class="workflow-card"><div class="n">STEP 02</div><div style="font-size:25px">🧭</div><h3>選擇工具</h3><p>根據任務選工具，並考慮功能、費用、隱私與資料來源。</p></div>
+  <div class="workflow-card"><div class="n">STEP 03</div><div style="font-size:25px">✍️</div><h3>清楚交代任務</h3><p>提供背景、角色、要求、輸出格式與成功標準，一次完成一個小任務。</p></div>
+  <div class="workflow-card"><div class="n">STEP 04</div><div style="font-size:25px">🔎</div><h3>查證並完成</h3><p>檢查來源、反思論證、用自己的理解修改，並依規定正確引用。</p></div>
+ </div>
+</section>
+
+<section class="section" id="faq">
+ <div class="section-head"><div><div class="kicker">常見問題</div><h2>如何有效使用 UniAi？</h2></div></div>
+ <details><summary>UniAi 會直接用 AI 產生回答嗎？</summary><p>會。此專案已包含 AI API 連接功能；完成伺服器與 API key 設定後，AI 助理便能直接回覆。若尚未設定 API key，其他任務導航與 Prompt 產生功能仍可使用。</p></details>
+ <details><summary>推薦的工具一定是最好的嗎？</summary><p>不一定。推薦只是依任務類型提供的起點，不代表絕對排名。工具的功能、價格、使用限制與資料政策可能變動，使用前請查看官方資訊。</p></details>
+ <details><summary>可以讓 AI 幫我完成整份作業嗎？</summary><p>建議把作業拆成理解題目、規劃、研究、分析、撰寫初稿與查證等小任務。用 AI 幫助自己學習與改善思考，不要直接繳交自己不理解或未查證的內容。</p></details>
+ <details><summary>Prompt 越長就一定越好嗎？</summary><p>不一定。好的 Prompt 應該有清楚目標、足夠背景、輸出要求與評估標準。遇到大型任務時，可以分階段進行，並根據每次結果調整要求。</p></details>
+</section>
+<footer class="footer"><div class="footer-inner"><div><b style="color:var(--ink)">✦ UniAi</b><br>你的 AI 學習導航員</div><div>© 2026 Xueerlian. 保留所有權利。<br>教育產品原型<br>推薦內容僅供參考，使用者仍需自行查證 AI 的輸出。</div></div></footer>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+
+const modelCatalog={
+ general:{models:'Claude Fable 5',strength:{zh:'綜合推理、agentic 多步驟任務、程式與科學工作。',vi:'Lý luận tổng hợp, tác vụ agent nhiều bước, lập trình và khoa học.',en:'Broad reasoning, multi-step agentic tasks, coding, and scientific work.'},benchmark:'Artificial Analysis Index: #1, score 60 (theo ảnh tham khảo)',fit:{zh:'困難任務、深度分析與多步驟工作流程',vi:'Tác vụ khó, phân tích chuyên sâu và quy trình nhiều bước.',en:'Difficult tasks, deep analysis, and multi-step workflows.'},note:{zh:'需要考量成本與延遲。',vi:'Cần cân nhắc chi phí và độ trễ.',en:'Consider cost and latency.'}},
+ reasoning:{models:'Claude Opus 4.8',strength:{zh:'深度推理、科學、程式與困難問題。',vi:'Suy luận sâu, khoa học, lập trình và bài toán khó.',en:'Deep reasoning, science, coding, and difficult problems.'},benchmark:'Artificial Analysis: #2, score 56; Vellum HLE #2 (theo ảnh tham khảo)',fit:{zh:'研究、文件分析與複雜決策。',vi:'Nghiên cứu, phân tích tài liệu và quyết định phức tạp.',en:'Research, document analysis, and complex decisions.'},note:{zh:'不一定是最便宜的選擇。',vi:'Không phải lựa chọn rẻ nhất.',en:'Not necessarily the lowest-cost option.'}},
+ vision:{models:'GPT-5.5',strength:{zh:'通用推理、視覺理解與多模態問題。',vi:'Lý luận tổng quát, hiểu hình ảnh và xử lý đa phương thức.',en:'General reasoning, visual understanding, and multimodal tasks.'},benchmark:'Artificial Analysis: #3 high; score 55; Vellum ARC-AGI 2 #1 (theo ảnh tham khảo)',fit:{zh:'圖片分析、邏輯任務與多用途助理。',vi:'Phân tích hình ảnh, tác vụ logic và trợ lý đa năng.',en:'Image analysis, logic tasks, and general-purpose assistance.'},note:{zh:'高階設定可能較慢。',vi:'Cấu hình cao có thể chậm hơn.',en:'Higher-end configurations may be slower.'}},
+ speed:{models:'Gemini 3.5 Flash',strength:{zh:'回覆快、上下文大、多模態能力強。',vi:'Nhanh, ngữ cảnh lớn, đa phương thức mạnh.',en:'Fast responses, large context, and strong multimodal capabilities.'},benchmark:'Artificial Analysis: score 50, ~188 tokens/s; MMMU-Pro 84% (theo ảnh tham khảo)',fit:{zh:'聊天機器人、文件處理與需要快速回覆的產品。',vi:'Chatbot, xử lý tài liệu và sản phẩm cần phản hồi nhanh.',en:'Chatbots, document processing, and fast-response products.'},note:{zh:'專業領域任務仍需實際測試。',vi:'Cần kiểm tra kỹ với tác vụ chuyên ngành.',en:'Test carefully on specialized tasks.'}},
+ value:{models:'GLM-5.2 Max',strength:{zh:'表現、速度與成本之間取得平衡。',vi:'Điểm số tốt, tốc độ khá và chi phí tương đối thấp.',en:'Balances quality, speed, and relatively low cost.'},benchmark:'Artificial Analysis: score 51; blended price ~US$0.90 / 1M tokens (theo ảnh tham khảo)',fit:{zh:'企業需要兼顧價格與品質的情境。',vi:'Doanh nghiệp cần cân bằng giá và chất lượng.',en:'Business use cases balancing price and quality.'},note:{zh:'功能與生態系可能因供應商而異。',vi:'Hệ sinh thái và tính năng tùy nhà cung cấp.',en:'Features and ecosystem vary by provider.'}},
+ context:{models:'Qwen3.7-Plus · Mistral Small 4 · Claude Opus 4.5/4.8',strength:{zh:'長上下文、檢索與大型文件閱讀。',vi:'Ngữ cảnh dài, truy xuất thông tin và đọc tài liệu lớn.',en:'Long context, retrieval, and reading large documents.'},benchmark:'LLM Stats: Qwen3.7-Plus #1 long context; BenchLM: Claude Opus 4.5 LongBench v2 64.4% (theo ảnh tham khảo)',fit:{zh:'長篇報告、法律文件、知識庫與大型資料。',vi:'Hồ sơ dài, tài liệu pháp lý, báo cáo và cơ sở tri thức.',en:'Long reports, legal documents, and knowledge bases.'},note:{zh:'上下文很長不代表一定能準確提取文件中段資訊。',vi:'Ngữ cảnh lớn không đảm bảo truy xuất chính xác thông tin ở giữa tài liệu.',en:'A large context window does not guarantee accurate retrieval from the middle of a document.'}},
+ multimodal:{models:'Claude Fable 5 · Gemini 3.5 Flash · GPT-5.5',strength:{zh:'理解圖片與文字、圖表、掃描文件。',vi:'Hiểu hình ảnh và chữ, biểu đồ, tài liệu scan.',en:'Understands images and text, charts, and scanned documents.'},benchmark:'Vals MMMU Pro: Claude Fable 5 89.31%; GPT-5.5 88.27% (theo ảnh tham khảo)',fit:{zh:'閱讀圖片、投影片、圖表與含圖片的學術資料。',vi:'Đọc ảnh, slide, biểu đồ và tài liệu học thuật có hình.',en:'Reading images, slides, charts, and image-heavy academic documents.'},note:{zh:'推理型模型可能有較高延遲。',vi:'Mô hình reasoning có thể có độ trễ cao.',en:'Reasoning-heavy models may have higher latency.'}},
+ coding:{models:'Claude Sonnet 4.6 · Claude Fable / Mythos / Opus',strength:{zh:'寫程式、除錯、重構與專案協作。',vi:'Viết code, debug, refactor và làm việc theo dự án.',en:'Coding, debugging, refactoring, and project work.'},benchmark:'SWE-bench / Vellum: Claude family leading agentic coding (theo ảnh tham khảo)',fit:{zh:'開發團隊、coding assistant 與 code review。',vi:'Đội phát triển, trợ lý lập trình và review code.',en:'Development teams, coding assistants, and code review.'},note:{zh:'極難的程式任務可考慮 frontier 模型，仍要執行測試。',vi:'Với tác vụ cực khó, cân nhắc model frontier và luôn chạy kiểm thử.',en:'For very difficult tasks, consider a frontier model and always run tests.'}},
+ small:{models:'Gemma · Nova Micro · Qwen 小型模型',strength:{zh:'便宜、快速，適合簡單任務。',vi:'Rẻ, nhanh, đủ cho tác vụ đơn giản.',en:'Low-cost and fast for simple tasks.'},benchmark:'Artificial Analysis / Vellum: nhóm này có giá thấp (theo ảnh tham khảo)',fit:{zh:'分類、短摘要、routing 與重複任務。',vi:'Phân loại, tóm tắt ngắn, định tuyến và tác vụ lặp.',en:'Classification, short summaries, routing, and repetitive tasks.'},note:{zh:'缺少檢查時，不要用於重大決策。',vi:'Không nên dùng cho quyết định quan trọng nếu thiếu kiểm tra.',en:'Avoid important decisions without additional verification.'}}
+};
+const languageStrings={
+ zh:{startUse:'開始使用 ↗',modelTitle:'依照任務選擇 AI 模型',modelIntro:'先選擇你的主要需求，查看參考模型、適用情境與使用提醒。',modelCategoryLabel:'你最需要哪一種能力？',modelDisclaimer:'以下型號與基準數字依照你提供的參考圖片整理，尚未在本網站獨立驗證。模型名稱、排名、價格與 benchmark 會變動，使用前請查看官方資料。',recommend:'推薦參考',strength:'主要優勢',benchmark:'參考基準／數據',fit:'最適合',note:'使用提醒',choose:'請選擇需求',navHome:'首頁',navTasks:'任務導航',navAssistant:'AI 助理',navPrompt:'Prompt 生成',navVerify:'回答驗證'},
+ vi:{startUse:'Bắt đầu sử dụng ↗',modelTitle:'Chọn mô hình AI theo nhiệm vụ',modelIntro:'Chọn nhu cầu chính để xem mô hình tham khảo, tình huống phù hợp và lưu ý khi sử dụng.',modelCategoryLabel:'Bạn cần năng lực nào nhất?',modelDisclaimer:'Tên mô hình và số liệu benchmark dưới đây được tổng hợp từ ảnh tham khảo bạn cung cấp, chưa được xác minh độc lập trên website. Tên model, thứ hạng, giá và benchmark có thể thay đổi; hãy kiểm tra nguồn chính thức trước khi dùng.',recommend:'Gợi ý tham khảo',strength:'Điểm mạnh chính',benchmark:'Benchmark / số liệu tham khảo',fit:'Phù hợp nhất',note:'Lưu ý',choose:'Chọn nhu cầu',navHome:'Trang chủ',navTasks:'Điều hướng nhiệm vụ',navAssistant:'Trợ lý AI',navPrompt:'Tạo Prompt',navVerify:'Kiểm chứng câu trả lời'},
+ en:{startUse:'Get started ↗',modelTitle:'Choose an AI model for your task',modelIntro:'Choose your main need to compare suggested models, use cases, and practical cautions.',modelCategoryLabel:'Which capability matters most?',modelDisclaimer:'Model names and benchmark figures below are transcribed from the reference images you supplied and have not been independently verified on this website. Model names, rankings, prices, and benchmarks can change; check official sources before use.',recommend:'Suggested option',strength:'Main strengths',benchmark:'Reference benchmark / figures',fit:'Best suited for',note:'Caution',choose:'Choose a need',navHome:'Home',navTasks:'Task navigator',navAssistant:'AI assistant',navPrompt:'Prompt generator',navVerify:'Answer verification'}
+};
+let currentLanguage='zh';
+const $=id=>document.getElementById(id);
+function renderModelChoice(){const lang=currentLanguage;const d=modelCatalog[$('modelCategory').value];const t=languageStrings[lang];const benchmark=d.benchmark.replaceAll('（theo ảnh tham khảo）',lang==='vi'?'(theo ảnh tham khảo)':lang==='en'?'(from reference image)':'（參考圖片）').replaceAll('(theo ảnh tham khảo)',lang==='vi'?'(theo ảnh tham khảo)':lang==='en'?'(from reference image)':'（參考圖片）');$('modelResult').innerHTML=`<div class="rec-top"><span class="pill">✦ ${t.recommend}</span></div><div class="rec-name">${d.models}</div><div class="rec-desc"><b>${t.strength}:</b> ${d.strength[lang]}</div><div class="rec-reason"><b>${t.benchmark}:</b><br>${benchmark}</div><p><b>${t.fit}:</b> ${d.fit[lang]}</p><p><b>${t.note}:</b> ${d.note[lang]}</p>`;}
+const textMap={
+ '首頁':{vi:'Trang chủ',en:'Home'},'任務導航':{vi:'Điều hướng nhiệm vụ',en:'Task navigator'},'AI 助理':{vi:'Trợ lý AI',en:'AI assistant'},'Prompt 生成':{vi:'Tạo Prompt',en:'Prompt generator'},'回答驗證':{vi:'Kiểm chứng câu trả lời',en:'Answer verification'},'開始使用 ↗':{vi:'Bắt đầu sử dụng ↗',en:'Get started ↗'},
+ '大學生的 AI 學習導航員':{vi:'Trợ lý điều hướng AI cho sinh viên',en:'AI learning navigator for university students'},'不只是使用 AI。':{vi:'Không chỉ dùng AI.',en:'It is not just about using AI.'},'更要懂得如何善用 AI。':{vi:'Mà còn biết cách sử dụng AI hiệu quả.',en:'It is about learning to use AI well.'},'依照作業的不同階段選擇合適工具、一步步完成任務、寫出清楚有效的 Prompt，並在繳交前檢查 AI 的回答。':{vi:'Chọn công cụ phù hợp theo từng giai đoạn bài tập, hoàn thành từng bước, viết Prompt rõ ràng và kiểm tra câu trả lời của AI trước khi nộp.',en:'Choose suitable tools for each stage of an assignment, work step by step, write clear prompts, and check AI answers before submission.'},'找到適合的工作流程':{vi:'Tìm quy trình phù hợp',en:'Find the right workflow'},'了解使用方式':{vi:'Tìm hiểu cách sử dụng',en:'How it works'},'為大學生設計':{vi:'Thiết kế cho sinh viên',en:'Designed for students'},'從作業要求到經過查證的成果':{vi:'Từ yêu cầu bài tập đến kết quả đã kiểm chứng',en:'From assignment brief to verified work'},'沒有一個 AI 工具適合所有任務。先釐清需求，再選擇工具、使用方法並驗證結果。':{vi:'Không có công cụ AI nào phù hợp với mọi nhiệm vụ. Hãy xác định nhu cầu, chọn công cụ, cách sử dụng rồi kiểm chứng kết quả.',en:'No single AI tool fits every task. Clarify the need, choose a tool and workflow, then verify the result.'},
+ '依任務推薦':{vi:'Gợi ý theo nhiệm vụ',en:'Task-based suggestions'},'依照具體目標尋找合適工具':{vi:'Tìm công cụ theo mục tiêu cụ thể',en:'Find tools for a specific goal'},'步驟式引導':{vi:'Hướng dẫn từng bước',en:'Step-by-step guidance'},'知道使用 AI 前、中、後該做什麼':{vi:'Biết cần làm gì trước, trong và sau khi dùng AI',en:'Know what to do before, during, and after using AI'},'批判思考':{vi:'Tư duy phản biện',en:'Critical thinking'},'不把 AI 的回答直接當成事實':{vi:'Không mặc định câu trả lời AI là sự thật',en:'Do not assume AI answers are facts'},
+ '直接向 AI 提問，取得即時回覆':{vi:'Đặt câu hỏi và nhận phản hồi từ AI',en:'Ask AI directly and get a response'},'你現在要完成什麼任務？':{vi:'Bạn đang cần hoàn thành nhiệm vụ gì?',en:'What task are you working on?'},'選擇學習任務':{vi:'Chọn nhiệm vụ học tập',en:'Choose a study task'},'個案分析':{vi:'Phân tích tình huống',en:'Case study analysis'},'文獻與資料研究':{vi:'Nghiên cứu tài liệu và dữ liệu',en:'Literature and data research'},'製作簡報':{vi:'Tạo bài thuyết trình',en:'Create a presentation'},'製作影片／內容':{vi:'Tạo video / nội dung',en:'Create video / content'},'資料分析':{vi:'Phân tích dữ liệu',en:'Data analysis'},'寫作與修改':{vi:'Viết và chỉnh sửa',en:'Writing and editing'},'翻譯與語言學習':{vi:'Dịch thuật và học ngôn ngữ',en:'Translation and language learning'},'考試複習／理解課程':{vi:'Ôn thi / hiểu bài học',en:'Exam revision / understanding courses'},'產生學習流程 →':{vi:'Tạo quy trình học tập →',en:'Build a study workflow →'},'簡述你的作業（選填）':{vi:'Mô tả ngắn bài tập (không bắt buộc)',en:'Briefly describe your assignment (optional)'},'你目前進行到哪個階段？':{vi:'Bạn đang ở giai đoạn nào?',en:'Which stage are you at?'},'還不知道如何開始':{vi:'Chưa biết bắt đầu từ đâu',en:'Not sure how to start'},'正在找資料／研究':{vi:'Đang tìm tài liệu / nghiên cứu',en:'Researching / finding sources'},'已經有初稿':{vi:'Đã có bản nháp',en:'I have a draft'},'快完成了，需要檢查':{vi:'Sắp hoàn thành, cần kiểm tra',en:'Nearly done; needs review'},
+ '直接回答':{vi:'Trả lời trực tiếp',en:'Direct answer'},'逐步教學':{vi:'Hướng dẫn từng bước',en:'Step-by-step tutor'},'改善 Prompt':{vi:'Cải thiện Prompt',en:'Improve prompt'},'檢查回答／論證':{vi:'Kiểm tra câu trả lời / lập luận',en:'Check answer / argument'},'簡單易懂':{vi:'Đơn giản, dễ hiểu',en:'Simple and clear'},'學術、條理清楚':{vi:'Học thuật, mạch lạc',en:'Academic and structured'},'簡潔、切中重點':{vi:'Ngắn gọn, đúng trọng tâm',en:'Concise and focused'},'送出問題 ↗':{vi:'Gửi câu hỏi ↗',en:'Send question ↗'},'清除對話':{vi:'Xóa hội thoại',en:'Clear conversation'},'複製最近的回答':{vi:'Sao chép câu trả lời gần nhất',en:'Copy latest answer'},'用 Prompt 反向檢查 AI 的回答':{vi:'Dùng Prompt để kiểm tra lại câu trả lời AI',en:'Use a prompt to review AI answers'},'負責任地使用 AI':{vi:'Sử dụng AI có trách nhiệm',en:'Use AI responsibly'},'完成一份作業時，可以怎麼使用 AI？':{vi:'Có thể dùng AI như thế nào khi làm bài?',en:'How can you use AI to complete an assignment?'},'理解作業要求':{vi:'Hiểu yêu cầu bài tập',en:'Understand the assignment'},'選擇工具':{vi:'Chọn công cụ',en:'Choose tools'},'清楚交代任務':{vi:'Mô tả nhiệm vụ rõ ràng',en:'Describe the task clearly'},'查證並完成':{vi:'Kiểm chứng và hoàn thiện',en:'Verify and finish'}
+};
+const selectTranslations={
+ modelCategory:{
+  zh:['綜合能力／複雜任務','深度推理與研究','推理與視覺','速度與多模態','效能與價格平衡','長文件／長上下文','圖片、簡報與掃描文件','程式開發','低成本、簡單重複任務'],
+  vi:['Năng lực tổng hợp / nhiệm vụ phức tạp','Suy luận sâu và nghiên cứu','Suy luận và thị giác','Tốc độ và đa phương thức','Cân bằng hiệu năng và chi phí','Tài liệu dài / ngữ cảnh dài','Hình ảnh, slide và tài liệu scan','Lập trình','Chi phí thấp, tác vụ đơn giản lặp lại'],
+  en:['General capability / complex tasks','Deep reasoning and research','Reasoning and vision','Speed and multimodal','Performance and cost balance','Long documents / long context','Images, slides, and scanned documents','Coding','Low-cost, simple repetitive tasks']
+ },
+ aiMode:{zh:['直接回答','逐步教學','改善 Prompt','檢查回答／論證'],vi:['Trả lời trực tiếp','Hướng dẫn từng bước','Cải thiện Prompt','Kiểm tra câu trả lời / lập luận'],en:['Direct answer','Step-by-step tutoring','Improve prompt','Check answer / argument']},
+ aiStyle:{zh:['簡單易懂','學術、條理清楚','簡潔、切中重點'],vi:['Đơn giản, dễ hiểu','Học thuật, có cấu trúc','Ngắn gọn, đúng trọng tâm'],en:['Simple and clear','Academic and structured','Concise and focused']},
+ level:{zh:['還不知道如何開始','正在找資料／研究','已經有初稿','快完成了，需要檢查'],vi:['Chưa biết bắt đầu từ đâu','Đang tìm tài liệu / nghiên cứu','Đã có bản nháp','Sắp hoàn thành, cần kiểm tra'],en:['Not sure how to start','Researching / finding sources','I have a draft','Nearly finished; needs review']},
+ pTask:{zh:['分析個案','搜尋與整理文獻','規劃簡報大綱','分析資料','解釋課程概念','修改初稿','撰寫影片腳本','翻譯並解釋術語'],vi:['Phân tích tình huống','Tìm kiếm và tổng hợp tài liệu','Lập dàn ý thuyết trình','Phân tích dữ liệu','Giải thích khái niệm môn học','Chỉnh sửa bản nháp','Viết kịch bản video','Dịch và giải thích thuật ngữ'],en:['Analyze a case study','Find and synthesize literature','Plan a presentation outline','Analyze data','Explain a course concept','Revise a draft','Write a video script','Translate and explain terminology']},
+ pFormat:{zh:['分步驟說明，並加上標題','以表格整理重點、證據與評論','包含論點與論據的大綱','簡短易懂的條列清單','分段腳本／口白'],vi:['Giải thích theo từng bước, có tiêu đề','Dùng bảng tổng hợp ý chính, bằng chứng và nhận xét','Dàn ý gồm luận điểm và luận cứ','Danh sách gạch đầu dòng ngắn gọn, dễ hiểu','Kịch bản / lời thoại theo từng đoạn'],en:['Step-by-step explanation with headings','Table of key points, evidence, and comments','Outline with claims and supporting reasons','Short, clear bullet list','Script / narration by section']}
+};
+const moreTextMap={
+ '用 AI 學得更聰明':{vi:'Học thông minh hơn với AI',en:'Learn smarter with AI'},'語言 / Language':{vi:'Ngôn ngữ / Language',en:'Language / 語言'},
+ '找到適合的工作流程':{vi:'Tìm quy trình phù hợp',en:'Find the right workflow'},'了解使用方式':{vi:'Tìm hiểu cách sử dụng',en:'How it works'},
+ 'AI 助理':{vi:'Trợ lý AI',en:'AI assistant'},'回答驗證':{vi:'Kiểm chứng câu trả lời',en:'Answer verification'},
+ '依照任務選擇 AI 模型':{vi:'Chọn mô hình AI theo nhiệm vụ',en:'Choose an AI model for your task'},
+ '先選擇你的主要需求，查看參考模型、適用情境與使用提醒。':{vi:'Chọn nhu cầu chính để xem mô hình gợi ý, tình huống phù hợp và lưu ý khi sử dụng.',en:'Choose your main need to see suggested models, use cases, and practical cautions.'},
+ '你最需要哪一種能力？':{vi:'Bạn cần năng lực nào nhất?',en:'Which capability matters most?'},
+ '以下型號與基準數字依照你提供的參考圖片整理，尚未在本網站獨立驗證。模型名稱、排名、價格與 benchmark 會變動，使用前請查看官方資料。':{vi:'Tên model và số liệu benchmark được tổng hợp từ ảnh bạn cung cấp, chưa được xác minh độc lập. Tên model, thứ hạng, giá và benchmark có thể thay đổi; hãy kiểm tra nguồn chính thức.',en:'Model names and benchmark figures are based on your reference images and have not been independently verified. Names, rankings, prices, and benchmarks can change; check official sources.'},
+ '大學生的 AI 學習導航員':{vi:'Trợ lý điều hướng học tập bằng AI cho sinh viên',en:'AI learning navigator for university students'},
+ '不只是使用 AI。':{vi:'Không chỉ sử dụng AI.',en:'It is not just about using AI.'},'更要懂得如何善用 AI。':{vi:'Mà còn biết cách sử dụng AI hiệu quả.',en:'Learn how to use AI well.'},
+ '為大學生設計':{vi:'Thiết kế cho sinh viên',en:'Designed for students'},'從作業要求到經過查證的成果':{vi:'Từ yêu cầu bài tập đến kết quả đã kiểm chứng',en:'From assignment brief to verified work'},
+ '沒有一個 AI 工具適合所有任務。先釐清需求，再選擇工具、使用方法並驗證結果。':{vi:'Không có công cụ AI nào phù hợp với mọi nhiệm vụ. Hãy xác định nhu cầu, chọn công cụ và cách sử dụng, rồi kiểm chứng kết quả.',en:'No single AI tool fits every task. Clarify the need, choose a tool and workflow, then verify the result.'},
+ '依任務推薦':{vi:'Gợi ý theo nhiệm vụ',en:'Task-based suggestions'},'依照具體目標尋找合適工具':{vi:'Tìm công cụ phù hợp với mục tiêu cụ thể',en:'Find tools for a specific goal'},'步驟式引導':{vi:'Hướng dẫn từng bước',en:'Step-by-step guidance'},'知道使用 AI 前、中、後該做什麼':{vi:'Biết cần làm gì trước, trong và sau khi dùng AI',en:'Know what to do before, during, and after using AI'},'批判思考':{vi:'Tư duy phản biện',en:'Critical thinking'},'不把 AI 的回答直接當成事實':{vi:'Không mặc định câu trả lời AI là sự thật',en:'Do not assume AI answers are facts'},
+ '直接向 AI 提問，取得即時回覆':{vi:'Đặt câu hỏi và nhận phản hồi từ AI',en:'Ask AI directly and get a response'},'輸入作業要求或問題。UniAi 會依照你選擇的模式回答，並協助你理解解題過程。':{vi:'Nhập yêu cầu bài tập hoặc câu hỏi. UniAi sẽ trả lời theo chế độ bạn chọn và giúp bạn hiểu quá trình giải quyết.',en:'Enter an assignment brief or question. UniAi responds in your selected mode and helps you understand the process.'},
+ '透過伺服器連接 AI':{vi:'Kết nối AI qua máy chủ',en:'AI connected through server'},'UniAi 學習助理':{vi:'Trợ lý học tập UniAi',en:'UniAi study assistant'},'可以貼上作業要求、文件節錄或具體問題。請勿輸入密碼或個人敏感資訊。':{vi:'Bạn có thể dán yêu cầu bài tập, trích đoạn tài liệu hoặc câu hỏi cụ thể. Không nhập mật khẩu hay thông tin nhạy cảm.',en:'Paste an assignment brief, document excerpt, or specific question. Do not enter passwords or sensitive personal information.'},
+ '你好！我可以直接回答問題、逐步引導你解題、改善 Prompt，或檢查一段回答與論證。請先選擇模式，再輸入需求。':{vi:'Xin chào! Tôi có thể trả lời câu hỏi, hướng dẫn từng bước, cải thiện Prompt hoặc kiểm tra câu trả lời và lập luận. Hãy chọn chế độ rồi nhập yêu cầu.',en:'Hello! I can answer questions, guide you step by step, improve prompts, or review an answer and its reasoning. Choose a mode, then enter your request.'},
+ '解釋概念':{vi:'Giải thích khái niệm',en:'Explain a concept'},'分析個案':{vi:'Phân tích tình huống',en:'Analyze a case study'},'改善 Prompt':{vi:'Cải thiện Prompt',en:'Improve prompt'},'送出問題 ↗':{vi:'Gửi câu hỏi ↗',en:'Send question ↗'},'清除對話':{vi:'Xóa hội thoại',en:'Clear conversation'},'複製最近的回答':{vi:'Sao chép câu trả lời gần nhất',en:'Copy latest answer'},
+ '負責任地使用 AI':{vi:'Sử dụng AI có trách nhiệm',en:'Use AI responsibly'},'讓回答更有幫助':{vi:'Giúp câu trả lời hữu ích hơn',en:'Make answers more useful'},'說明課程、目標與老師的要求。':{vi:'Nêu môn học, mục tiêu và yêu cầu của giảng viên.',en:'Explain the course, goal, and instructor requirements.'},'提供相關資料，不要只說「幫我做這份作業」。':{vi:'Cung cấp tài liệu liên quan thay vì chỉ nói “làm bài này giúp tôi”.',en:'Provide relevant material instead of only saying “do this assignment for me.”'},'請 AI 標示不確定之處，不要捏造來源。':{vi:'Yêu cầu AI đánh dấu điểm chưa chắc chắn và không bịa nguồn.',en:'Ask AI to flag uncertainty and never invent sources.'},'自己閱讀、查證，再用自己的理解整理內容。':{vi:'Tự đọc, kiểm chứng và tổng hợp bằng hiểu biết của mình.',en:'Read and verify the material, then synthesize it in your own words.'},
+ '你現在要完成什麼任務？':{vi:'Bạn đang cần hoàn thành nhiệm vụ gì?',en:'What task are you working on?'},'選擇學習任務':{vi:'Chọn nhiệm vụ học tập',en:'Choose a study task'},'文獻與資料研究':{vi:'Nghiên cứu tài liệu và dữ liệu',en:'Literature and data research'},'製作簡報':{vi:'Tạo bài thuyết trình',en:'Create a presentation'},'製作影片／內容':{vi:'Tạo video / nội dung',en:'Create video / content'},'資料分析':{vi:'Phân tích dữ liệu',en:'Data analysis'},'寫作與修改':{vi:'Viết và chỉnh sửa',en:'Writing and editing'},'翻譯與語言學習':{vi:'Dịch thuật và học ngôn ngữ',en:'Translation and language learning'},'考試複習／理解課程':{vi:'Ôn thi / hiểu bài học',en:'Exam revision / understanding courses'},
+ '簡述你的作業（選填）':{vi:'Mô tả ngắn bài tập (không bắt buộc)',en:'Briefly describe your assignment (optional)'},'你目前進行到哪個階段？':{vi:'Bạn đang ở giai đoạn nào?',en:'Which stage are you at?'},'產生學習流程 →':{vi:'Tạo quy trình học tập →',en:'Build a study workflow →'},'建議流程':{vi:'Quy trình gợi ý',en:'Suggested workflow'},'工具參考':{vi:'Công cụ tham khảo',en:'Suggested tool'},'為什麼適合？':{vi:'Vì sao phù hợp?',en:'Why this tool?'},'建議執行步驟':{vi:'Các bước thực hiện',en:'Suggested steps'},'點開各步驟，查看說明、Prompt 範例，以及你需要自行確認的事項。':{vi:'Mở từng bước để xem giải thích, Prompt mẫu và những điều bạn cần tự kiểm tra.',en:'Open each step to see guidance, prompt examples, and what you should verify yourself.'},
+ '寫出清楚的 Prompt，得到切題的回答':{vi:'Viết Prompt rõ ràng để nhận câu trả lời đúng trọng tâm',en:'Write clear prompts for relevant answers'},'填寫左側資訊，UniAi 會組合成有架構、可以直接複製使用的 Prompt。':{vi:'Điền thông tin bên trái để UniAi tạo Prompt có cấu trúc, sẵn sàng sao chép và sử dụng.',en:'Fill in the fields on the left to create a structured prompt you can copy and use.'},'建立你的 Prompt':{vi:'Tạo Prompt của bạn',en:'Build your prompt'},'產生完整 Prompt ✦':{vi:'Tạo Prompt hoàn chỉnh ✦',en:'Generate full prompt ✦'},'回答驗證':{vi:'Kiểm chứng câu trả lời',en:'Answer verification'},
+ '已收到 AI 回答。使用前請確認重要事實與來源。':{vi:'Đã nhận được câu trả lời AI. Hãy kiểm tra các sự kiện và nguồn quan trọng trước khi sử dụng.',en:'AI response received. Verify important facts and sources before using it.'},'AI 連線失敗。':{vi:'Kết nối AI thất bại.',en:'AI connection failed.'},'請先輸入問題或作業要求。':{vi:'Vui lòng nhập câu hỏi hoặc yêu cầu bài tập trước.',en:'Enter a question or assignment brief first.'},'UniAi 正在產生回答……':{vi:'UniAi đang tạo câu trả lời…',en:'UniAi is generating a response…'},'正在整理問題並準備回答……':{vi:'Đang phân tích câu hỏi và chuẩn bị trả lời…',en:'Organizing the question and preparing an answer…'},'對話已重設。你想從哪一個學習任務開始？':{vi:'Đã đặt lại cuộc trò chuyện. Bạn muốn bắt đầu với nhiệm vụ học tập nào?',en:'Conversation reset. Which study task would you like to start with?'},'目前沒有可複製的回答。':{vi:'Hiện chưa có câu trả lời để sao chép.',en:'There is no answer to copy yet.'},
+ '有效分析個案':{vi:'Phân tích tình huống hiệu quả',en:'Analyze a case study effectively'},'先理解問題與證據，再評估可能的解決方案。':{vi:'Hiểu vấn đề và bằng chứng trước, sau đó đánh giá các phương án giải quyết.',en:'Understand the problem and evidence before evaluating possible solutions.'},'有根據的文獻與資料研究':{vi:'Nghiên cứu tài liệu và dữ liệu có căn cứ',en:'Evidence-based literature and data research'},'將找來源、閱讀來源與整合資訊拆成不同任務。':{vi:'Tách việc tìm nguồn, đọc nguồn và tổng hợp thông tin thành các nhiệm vụ riêng.',en:'Separate source discovery, source reading, and synthesis into distinct tasks.'},'規劃有說服力的簡報':{vi:'Lập kế hoạch thuyết trình thuyết phục',en:'Plan a persuasive presentation'},'從聽眾與核心訊息開始，再安排證據與視覺內容。':{vi:'Bắt đầu từ khán giả và thông điệp chính, sau đó sắp xếp bằng chứng và hình ảnh.',en:'Start with the audience and key message, then organize evidence and visuals.'},'製作影片與數位內容':{vi:'Tạo video và nội dung số',en:'Create video and digital content'},'先確定受眾、平台與訊息，再規劃腳本和畫面。':{vi:'Xác định khán giả, nền tảng và thông điệp trước khi lên kịch bản và hình ảnh.',en:'Define the audience, platform, and message before planning the script and visuals.'},'有條理的資料分析':{vi:'Phân tích dữ liệu có hệ thống',en:'Structured data analysis'},'先檢查資料品質，再選擇方法、呈現結果並解釋限制。':{vi:'Kiểm tra chất lượng dữ liệu trước, sau đó chọn phương pháp, trình bày kết quả và nêu hạn chế.',en:'Check data quality first, then choose methods, present results, and explain limitations.'},'清楚而有根據的寫作':{vi:'Viết rõ ràng và có căn cứ',en:'Clear, evidence-based writing'},'從論點與證據著手，逐步改善結構、邏輯與表達。':{vi:'Bắt đầu từ luận điểm và bằng chứng, rồi cải thiện cấu trúc, logic và cách diễn đạt.',en:'Start with claims and evidence, then improve structure, logic, and expression.'},'主動學習翻譯與語言':{vi:'Chủ động học dịch thuật và ngôn ngữ',en:'Learn translation and languages actively'},'不只是把文字翻譯完，也要理解語氣、術語與實際用法。':{vi:'Không chỉ dịch văn bản mà còn hiểu sắc thái, thuật ngữ và cách dùng thực tế.',en:'Go beyond translating text to understand tone, terminology, and real-world usage.'},'真正理解課程內容的考試複習':{vi:'Ôn thi để thực sự hiểu nội dung môn học',en:'Review for exams with real understanding'},'把教材轉換成解釋、練習題與具體回饋。':{vi:'Chuyển tài liệu học thành phần giải thích, câu hỏi luyện tập và phản hồi cụ thể.',en:'Turn course material into explanations, practice questions, and concrete feedback.'},'釐清要求':{vi:'Làm rõ yêu cầu',en:'Clarify the requirements'},'區分事實與假設':{vi:'Phân biệt sự kiện và giả định',en:'Separate facts and assumptions'},'分析原因與選項':{vi:'Phân tích nguyên nhân và phương án',en:'Analyze causes and options'},'建立論證並反思':{vi:'Xây dựng lập luận và phản tư',en:'Build and reflect on the argument'},'完成與查證':{vi:'Hoàn thiện và kiểm chứng',en:'Finish and verify'},'定義研究問題':{vi:'Xác định câu hỏi nghiên cứu',en:'Define the research question'},'尋找原始來源':{vi:'Tìm nguồn gốc ban đầu',en:'Find primary sources'},'閱讀並評估可信度':{vi:'Đọc và đánh giá độ tin cậy',en:'Read and assess credibility'},'整合不同觀點':{vi:'Tổng hợp các góc nhìn khác nhau',en:'Synthesize different perspectives'},'檢查引用與結論':{vi:'Kiểm tra trích dẫn và kết luận',en:'Check citations and conclusions'},'簡述你的作業（選填）':{vi:'Mô tả ngắn bài tập (không bắt buộc)',en:'Briefly describe your assignment (optional)'},'你希望 AI 做什麼？':{vi:'Bạn muốn AI làm gì?',en:'What would you like AI to do?'},'背景／作業要求':{vi:'Bối cảnh / yêu cầu bài tập',en:'Context / assignment requirements'},'希望 AI 扮演什麼角色？':{vi:'Bạn muốn AI đóng vai trò gì?',en:'What role should AI play?'},'回答對象與程度':{vi:'Đối tượng và trình độ người đọc',en:'Audience and level'},'回答格式':{vi:'Định dạng câu trả lời',en:'Response format'},'需要遵守的條件／評估標準':{vi:'Điều kiện / tiêu chí đánh giá',en:'Constraints / evaluation criteria'},'好的 Prompt 不一定要很長，但需要足夠的背景、要求與輸出標準。':{vi:'Prompt tốt không nhất thiết phải dài, nhưng cần đủ bối cảnh, yêu cầu và tiêu chuẩn đầu ra.',en:'A good prompt does not need to be long, but it needs enough context, requirements, and output criteria.'},'用 Prompt 反向檢查 AI 的回答':{vi:'Dùng Prompt để kiểm tra lại câu trả lời AI',en:'Use a prompt to review AI answers'},'在送出前，確認 AI 回答是否可靠':{vi:'Kiểm tra độ tin cậy của câu trả lời AI trước khi nộp',en:'Check whether an AI answer is reliable before submitting'},'以下檢查清單能協助你找出需要查證的主張。':{vi:'Danh sách kiểm tra dưới đây giúp bạn xác định các nhận định cần xác minh.',en:'This checklist helps identify claims that need verification.'},'AI 可能出錯。涉及事實、數據或參考來源時，使用前請獨立查證。':{vi:'AI có thể mắc lỗi. Hãy tự xác minh sự kiện, số liệu và nguồn tham khảo trước khi sử dụng.',en:'AI can make mistakes. Independently verify facts, figures, and references before use.'},'設定好伺服器與有效的 API key 後，這裡才會透過 API 產生 AI 回答。':{vi:'Phần trả lời AI chỉ hoạt động sau khi máy chủ và API key hợp lệ được cấu hình.',en:'AI responses work here only after the server and a valid API key are configured.'},'產生學習流程 →':{vi:'Tạo quy trình học tập →',en:'Build study workflow →'},'建議執行步驟':{vi:'Các bước thực hiện gợi ý',en:'Suggested steps'},'建立你的 Prompt':{vi:'Tạo Prompt của bạn',en:'Build your prompt'},'產生完整 Prompt ✦':{vi:'Tạo Prompt hoàn chỉnh ✦',en:'Generate full prompt ✦'},'複製 Prompt':{vi:'Sao chép Prompt',en:'Copy prompt'},'下載 .txt':{vi:'Tải xuống .txt',en:'Download .txt'},'重設':{vi:'Đặt lại',en:'Reset'}
+ };
+Object.assign(moreTextMap,{
+ '✦ 大學生的 AI 學習導航員':{vi:'✦ Trợ lý điều hướng học tập bằng AI cho sinh viên',en:'✦ AI learning navigator for university students'},
+ 'UniAi 協助你依照作業的不同階段選擇合適工具、一步步完成任務、寫出清楚有效的 Prompt，並在繳交前檢查 AI 的回答。':{vi:'UniAi giúp bạn chọn công cụ phù hợp theo từng giai đoạn bài tập, làm từng bước, viết Prompt rõ ràng và kiểm tra câu trả lời AI trước khi nộp.',en:'UniAi helps you choose tools for each stage of an assignment, work step by step, write clear prompts, and check AI answers before submission.'},
+ '01 · 選擇':{vi:'01 · Chọn',en:'01 · Choose'},'確認目標':{vi:'Xác định mục tiêu',en:'Define the goal'},'02 · 執行':{vi:'02 · Thực hiện',en:'02 · Execute'},'寫好 Prompt':{vi:'Viết Prompt tốt',en:'Write a good prompt'},'03 · 查證':{vi:'03 · Kiểm chứng',en:'03 · Verify'},'檢查結果':{vi:'Kiểm tra kết quả',en:'Check the result'},
+ '問題、證據、可行方案':{vi:'Vấn đề, bằng chứng, phương án khả thi',en:'Problem, evidence, feasible options'},'找來源、閱讀、整理':{vi:'Tìm nguồn, đọc và tổng hợp',en:'Find sources, read, synthesize'},'架構、內容、視覺呈現':{vi:'Cấu trúc, nội dung, trình bày trực quan',en:'Structure, content, visual presentation'},'腳本、畫面、剪輯':{vi:'Kịch bản, hình ảnh, dựng phim',en:'Script, visuals, editing'},'Excel、圖表、解讀':{vi:'Excel, biểu đồ, diễn giải',en:'Excel, charts, interpretation'},'大綱、論證、表達':{vi:'Dàn ý, lập luận, diễn đạt',en:'Outline, argument, expression'},'翻譯、解釋、練習':{vi:'Dịch, giải thích, luyện tập',en:'Translate, explain, practice'},'解釋、記憶卡、測驗':{vi:'Giải thích, thẻ ghi nhớ, bài kiểm tra',en:'Explanations, flashcards, quizzes'},
+ '選擇最接近目前作業需求的任務，UniAi 會提供起步流程與提示範例。':{vi:'Chọn nhiệm vụ gần nhất với nhu cầu hiện tại; UniAi sẽ gợi ý quy trình bắt đầu và Prompt mẫu.',en:'Choose the task closest to your current needs. UniAi will suggest a starting workflow and prompt examples.'},'你可以隨時更換任務。':{vi:'Bạn có thể đổi nhiệm vụ bất cứ lúc nào.',en:'You can change tasks at any time.'},'第 1 步':{vi:'Bước 1',en:'Step 1'},'可協助整理問題、分析架構並比較不同方案。':{vi:'Có thể giúp sắp xếp vấn đề, xây dựng khung phân tích và so sánh các phương án.',en:'Helps organize a problem, structure analysis, and compare options.'},'它可以協助你將個案拆成明確步驟；仍需提供實際案例、資料與老師的評分標準。':{vi:'Công cụ có thể chia tình huống thành các bước rõ ràng; bạn vẫn cần cung cấp case, dữ liệu và tiêu chí chấm điểm của giảng viên.',en:'It can break a case into clear steps; you still need to provide the case, evidence, and grading criteria.'},'開啟 ChatGPT ↗':{vi:'Mở ChatGPT ↗',en:'Open ChatGPT ↗'},'用 Perplexity 找資料 ↗':{vi:'Dùng Perplexity tìm tài liệu ↗',en:'Find sources with Perplexity ↗'},
+ '你的 PROMPT':{vi:'PROMPT CỦA BẠN',en:'YOUR PROMPT'},'已準備好，可以複製':{vi:'Đã sẵn sàng để sao chép',en:'Ready to copy'},'你是一位具備批判思考能力的大學助教。':{vi:'Bạn là trợ giảng đại học có tư duy phản biện.',en:'You are a university teaching assistant with critical-thinking skills.'},'小提醒：取得 AI 回答後，可以要求它提供證據、標示不確定之處，並反駁自己的結論。':{vi:'Mẹo nhỏ: yêu cầu AI đưa bằng chứng, đánh dấu điểm chưa chắc chắn và phản biện kết luận của chính nó.',en:'Tip: ask AI to provide evidence, flag uncertainty, and challenge its own conclusion.'},'不要只因為 AI 說得合理就直接繳交':{vi:'Đừng nộp bài chỉ vì câu trả lời AI nghe có vẻ hợp lý',en:'Do not submit work just because an AI answer sounds convincing'},'每次取得 AI 的結果後，都可以使用這份檢核清單。':{vi:'Sau mỗi lần nhận kết quả AI, hãy dùng danh sách kiểm tra này.',en:'Use this checklist each time you receive an AI result.'},'回答查證清單':{vi:'Danh sách kiểm tra câu trả lời',en:'Answer verification checklist'},'勾選已完成的項目。':{vi:'Đánh dấu các mục đã hoàn thành.',en:'Check off completed items.'},'已完成 0/7 項':{vi:'Đã hoàn thành 0/7 mục',en:'0/7 items completed'},
+ '對照作業要求':{vi:'Đối chiếu yêu cầu bài tập',en:'Compare against assignment requirements'},'回答是否確實回應問題與老師提出的評分標準？':{vi:'Câu trả lời có đáp ứng câu hỏi và tiêu chí chấm điểm không?',en:'Does the answer address the question and grading criteria?'},'確認事實與數據':{vi:'Kiểm tra sự kiện và dữ liệu',en:'Check facts and data'},'檢查名稱、日期、數字與重要主張。':{vi:'Kiểm tra tên riêng, ngày tháng, số liệu và nhận định quan trọng.',en:'Check names, dates, figures, and important claims.'},'開啟並閱讀原始來源':{vi:'Mở và đọc nguồn gốc',en:'Open and read the original source'},'連結是否存在？原始來源真的支持引用的說法嗎？':{vi:'Liên kết có tồn tại không? Nguồn gốc có hỗ trợ nhận định được trích dẫn không?',en:'Does the link exist? Does the original source support the cited claim?'},'尋找相反觀點':{vi:'Tìm quan điểm trái chiều',en:'Look for opposing views'},'試著尋找反例、反證或其他可能的解釋。':{vi:'Tìm phản ví dụ, bằng chứng ngược hoặc cách giải thích khác.',en:'Look for counterexamples, contrary evidence, or alternative explanations.'},'區分事實與推論':{vi:'Phân biệt sự kiện và suy luận',en:'Separate facts and inferences'},'標示哪些內容已獲證實、哪些只是 AI 的推測。':{vi:'Đánh dấu nội dung đã được xác nhận và nội dung chỉ là suy đoán của AI.',en:'Mark what is verified and what is only an AI inference.'},'用自己的理解重新整理':{vi:'Tổng hợp lại bằng hiểu biết của mình',en:'Restate it in your own understanding'},'不看 AI 回答時，你能不能自己解釋這個內容？':{vi:'Không nhìn câu trả lời AI, bạn có thể tự giải thích nội dung này không?',en:'Can you explain the material without looking at the AI answer?'},'確認隱私與課程規範':{vi:'Kiểm tra quyền riêng tư và quy định môn học',en:'Check privacy and course rules'},'不要上傳敏感資料，並遵守老師對 AI 使用的規定。':{vi:'Không tải dữ liệu nhạy cảm và tuân thủ quy định dùng AI của giảng viên.',en:'Do not upload sensitive data; follow your instructor’s AI-use rules.'},'重設檢核清單':{vi:'Đặt lại danh sách kiểm tra',en:'Reset checklist'},'查證用 Prompt':{vi:'Prompt kiểm chứng',en:'Verification prompt'},'複製查證 Prompt':{vi:'Sao chép Prompt kiểm chứng',en:'Copy verification prompt'},'請記得：':{vi:'Hãy nhớ:',en:'Remember:'},'AI 可能把錯誤資訊說得很有自信。AI 提供的來源仍然需要實際開啟並確認。':{vi:'AI có thể trình bày thông tin sai với vẻ tự tin. Bạn vẫn cần mở và kiểm tra nguồn mà AI cung cấp.',en:'AI can present incorrect information confidently. You still need to open and verify its sources.'},'AI 可以協助學習，但你仍然是做決定並對作業負責的人。':{vi:'AI có thể hỗ trợ học tập, nhưng bạn vẫn chịu trách nhiệm về quyết định và bài làm.',en:'AI can support learning, but you remain responsible for decisions and submitted work.'},
+ '常見問題':{vi:'Câu hỏi thường gặp',en:'Frequently asked questions'},'如何有效使用 UniAi？':{vi:'Làm thế nào để sử dụng UniAi hiệu quả?',en:'How can I use UniAi effectively?'},'UniAi 會直接用 AI 產生回答嗎？':{vi:'UniAi có trực tiếp dùng AI để tạo câu trả lời không?',en:'Does UniAi generate answers with AI directly?'},'推薦的工具一定是最好的嗎？':{vi:'Công cụ được gợi ý có phải luôn tốt nhất không?',en:'Are recommended tools always the best?'},'可以讓 AI 幫我完成整份作業嗎？':{vi:'Có nên để AI làm toàn bộ bài tập không?',en:'Should I let AI complete my entire assignment?'},'Prompt 越長就一定越好嗎？':{vi:'Prompt càng dài có phải càng tốt không?',en:'Are longer prompts always better?'},'你的 AI 學習導航員':{vi:'Trợ lý điều hướng học tập bằng AI của bạn',en:'Your AI learning navigator'},'教育產品原型':{vi:'Bản mẫu sản phẩm giáo dục',en:'Educational product prototype'},'推薦內容僅供參考，使用者仍需自行查證 AI 的輸出。':{vi:'Nội dung gợi ý chỉ mang tính tham khảo; người dùng cần tự kiểm chứng kết quả AI.',en:'Recommendations are for reference only; users must verify AI outputs.'}
+});
+function tr(zh,vi,en){return currentLanguage==='vi'?vi:currentLanguage==='en'?en:zh;}
+function translateSelects(lang){Object.entries(selectTranslations).forEach(([id,langs])=>{const el=$(id);if(!el)return;[...el.options].forEach((opt,i)=>{if(langs[lang]&&langs[lang][i])opt.textContent=langs[lang][i];});});}
+function translateAttributes(lang){const placeholders={
+ aiInput:{zh:'例如：分析 Netflix 進入印度市場的個案，整理核心問題、案例證據、可能方案與建議……',vi:'Ví dụ: phân tích chiến lược mở rộng của Netflix tại Ấn Độ…',en:'Example: analyze Netflix’s expansion strategy in India…'},
+ assignment:{zh:'例如：分析 Netflix 在印度市場的擴張策略……',vi:'Ví dụ: phân tích chiến lược mở rộng của Netflix tại Ấn Độ…',en:'Example: analyze Netflix’s expansion strategy in India…'},
+ pContext:{zh:'貼上作業要求或說明問題。請勿輸入個人敏感資訊。',vi:'Dán yêu cầu bài tập hoặc mô tả vấn đề. Không nhập thông tin nhạy cảm.',en:'Paste the assignment brief or describe the issue. Do not enter sensitive information.'},
+ pConstraints:{zh:'例如：使用簡單語言、不捏造來源、只依據我提供的資料……',vi:'Ví dụ: dùng ngôn ngữ đơn giản, không bịa nguồn, chỉ dựa trên dữ liệu tôi cung cấp…',en:'Example: use simple language, do not invent sources, use only the material I provide…'}
+ };
+ Object.entries(placeholders).forEach(([id,langs])=>{if($(id))$(id).placeholder=langs[lang]||langs.zh;});
+ const aria={aiMode:{zh:'AI 回覆模式',vi:'Chế độ trả lời của AI',en:'AI response mode'},aiStyle:{zh:'回答風格',vi:'Phong cách trả lời',en:'Response style'},aiInput:{zh:'輸入給 AI 的問題',vi:'Nhập câu hỏi cho AI',en:'Enter a question for AI'},languageSelect:{zh:'選擇語言',vi:'Chọn ngôn ngữ',en:'Choose language'}};
+ Object.entries(aria).forEach(([id,langs])=>{if($(id))$(id).setAttribute('aria-label',langs[lang]||langs.zh);});
+ const defaultValues={pRole:{zh:'具備批判思考能力的大學助教',vi:'trợ giảng đại học có tư duy phản biện',en:'university teaching assistant with critical-thinking skills'},pAudience:{zh:'大學生，基礎程度',vi:'sinh viên đại học, trình độ cơ bản',en:'university students, beginner level'},pConstraints:{zh:'使用清楚易懂的語言。不要捏造數據或參考來源。若資料不足，請先詢問或明確說明假設。',vi:'Dùng ngôn ngữ rõ ràng, dễ hiểu. Không bịa số liệu hoặc nguồn tham khảo. Nếu thiếu dữ liệu, hãy hỏi lại hoặc nêu rõ giả định.',en:'Use clear, accessible language. Do not invent data or references. If information is missing, ask first or state assumptions clearly.'}};
+ Object.entries(defaultValues).forEach(([id,values])=>{const el=$(id);if(!el)return;if(!el.dataset.uniaiDefault){el.dataset.uniaiDefault='1';el.dataset.uniaiDefaultValues=JSON.stringify(values);}const prior=JSON.parse(el.dataset.uniaiDefaultValues);if(Object.values(prior).includes(el.value))el.value=values[lang];});
+ const starters={zh:['請用簡單的語言解釋這個概念，再提供一個實際例子：','請依照問題、證據、原因、方案與建議的架構分析以下個案：','請幫我改善以下 Prompt，讓目標、背景、輸出格式與評估標準更清楚：'],vi:['Hãy giải thích khái niệm này bằng ngôn ngữ đơn giản và đưa ra một ví dụ thực tế:','Hãy phân tích tình huống sau theo cấu trúc vấn đề, bằng chứng, nguyên nhân, phương án và đề xuất:','Hãy cải thiện Prompt sau để mục tiêu, bối cảnh, định dạng đầu ra và tiêu chí đánh giá rõ ràng hơn:'],en:['Explain this concept in simple language and give a practical example:','Analyze this case using the structure: problem, evidence, causes, options, and recommendation:','Improve this prompt so the goal, context, output format, and evaluation criteria are clearer:']};
+ document.querySelectorAll('[data-fill]').forEach((el,i)=>{if(i<3&&starters[lang][i])el.dataset.fill=starters[lang][i];});
+}
+function applyLanguage(lang){
+ if(!languageStrings[lang])lang='zh';currentLanguage=lang;document.documentElement.lang=lang==='zh'?'zh-Hant-TW':lang==='vi'?'vi':'en';
+ try{localStorage.setItem('uniai-language',lang);}catch(_e){}
+ if($('languageSelect'))$('languageSelect').value=lang;
+ const t=languageStrings[lang];
+ translateSelects(lang);translateAttributes(lang);
+ applyPromptControlsLanguage(lang);
+ /* Rebuild language-dependent content after language-aware form values are updated. */
+ if(typeof currentTask!=='undefined' && typeof renderPlan==='function')renderPlan();
+ if(typeof generatePrompt==='function')generatePrompt();
+ document.querySelectorAll('[data-i18n="startUse"]').forEach(el=>el.textContent=t.startUse);
+ document.querySelectorAll('[data-i18n="modelTitle"]').forEach(el=>el.textContent=t.modelTitle);
+ document.querySelectorAll('[data-i18n="modelIntro"]').forEach(el=>el.textContent=t.modelIntro);
+ document.querySelectorAll('[data-i18n="modelCategoryLabel"]').forEach(el=>el.textContent=t.modelCategoryLabel);
+ document.querySelectorAll('[data-i18n="modelDisclaimer"]').forEach(el=>el.textContent=t.modelDisclaimer);
+ const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
+ nodes.forEach(n=>{if(n.parentElement&&n.parentElement.closest('[data-i18n]'))return;if(!Object.prototype.hasOwnProperty.call(n,'__uniaiOriginalText'))n.__uniaiOriginalText=n.nodeValue;const original=n.__uniaiOriginalText;const trimmed=original.trim();if(!trimmed)return;const entry=moreTextMap[trimmed]||textMap[trimmed];let replacement=lang==='zh'?original.trim():(entry&&entry[lang])||original.trim();const lead=original.match(/^\s*/)[0],tail=original.match(/\s*$/)[0];n.nodeValue=lead+replacement+tail;});
+ renderModelChoice();
+}
+
+const data={
+ case:{title:"有效分析個案",intro:"先理解問題與證據，再評估可能的解決方案。",tool:"ChatGPT",desc:"可協助整理問題、分析架構並比較不同方案。",reason:"它可以協助你將個案拆成明確步驟；仍需提供實際案例、資料與老師的評分標準。",links:[['ChatGPT｜分析架構','https://chatgpt.com/','ChatGPT | Lập khung phân tích','ChatGPT | Analysis framework'],['Claude｜長文與論證','https://claude.ai/','Claude | Văn bản dài và lập luận','Claude | Long-form analysis'],['Gemini｜多模態分析','https://gemini.google.com/','Gemini | Phân tích đa phương thức','Gemini | Multimodal analysis'],['Perplexity｜查找來源','https://www.perplexity.ai/','Perplexity | Tìm nguồn','Perplexity | Source discovery'],['NotebookLM｜依文件問答','https://notebooklm.google.com/','NotebookLM | Hỏi đáp theo tài liệu','NotebookLM | Ask your documents']],steps:[
+ ["釐清要求","閱讀題目，確認核心問題、作業範圍與評分標準。不要只用「分析這個個案」這種過於籠統的指令。",["記下目標、背景、待解決問題與需要繳交的成果。"],"請閱讀以下作業要求，整理目標、需要回答的問題、評分標準、必要資料與尚不清楚之處。先不要分析個案；若資訊不足，請先問我。"],
+ ["區分事實與假設","整理案例實際提供的資料。案例中沒有的資訊應標示為尚未確認。",["建立表格：案例事實／可能意義／缺少的資訊。"],"請只根據我提供的案例，整理事實、支持證據、可能意義與缺少的資訊。不要加入案例以外的事實；必要時標示「資料不足」。"],
+ ["分析原因與選項","使用適合課程的分析架構，但只選擇真正有助回答問題的方法。",["考慮根本原因、利害關係人、可行選項與取捨。"],"請扮演管理學助教，根據已整理的事實提出 2–3 種可能解釋。每種解釋都列出支持證據、反證與缺少資訊；先不要急著下結論。"],
+ ["建立論證並反思","請 AI 檢查邏輯，而不是讓 AI 代替你做決定。",["每個論點都應有證據、解釋，並連回核心問題。"],"請批判性檢查我的分析大綱，找出邏輯跳躍、缺乏證據的主張、被忽略的觀點並提出改善方式。若我的觀點有依據，請保留；不要自行加入新事實。"],
+ ["完成與查證","用自己的話整理內容，對照原始資料並確認老師的課程規範。",["開啟原始來源，檢查引用、數字與最後結論。"],"請依作業要求建立檢查清單，逐項標示已完成或尚未完成，並引用初稿中的證據。沒有根據時，不要自行判定為合格。"]
+ ]},
+ research:{title:"有根據的文獻與資料研究",intro:"將找來源、閱讀來源與整合資訊拆成不同任務。",tool:"Perplexity",desc:"可協助探索網路資訊並追蹤引用來源。",reason:"適合研究初期探索資料；你仍需開啟原始來源、評估可信度並確認來源真的支持論點。",links:[['Perplexity｜網路探索與來源','https://www.perplexity.ai/','Perplexity | Khám phá web và nguồn','Perplexity | Web research and sources'],['Elicit｜學術文獻整理','https://elicit.com/','Elicit | Tổng hợp nghiên cứu học thuật','Elicit | Academic literature review'],['Consensus｜研究證據搜尋','https://consensus.app/','Consensus | Tìm bằng chứng nghiên cứu','Consensus | Research evidence search'],['Google Scholar｜學術搜尋','https://scholar.google.com/','Google Scholar | Tìm kiếm học thuật','Google Scholar | Academic search'],['NotebookLM｜閱讀指定資料','https://notebooklm.google.com/','NotebookLM | Đọc tài liệu đã chọn','NotebookLM | Work from selected sources'],['Claude｜長文件摘要','https://claude.ai/','Claude | Tóm tắt tài liệu dài','Claude | Long-document synthesis']],steps:[
+ ["定義研究問題","將寬泛主題縮小成可以透過證據回答的具體問題。",["確認主題、範圍、時間與需要的來源類型。"],"請協助我縮小研究主題［主題］，提出 3 個具體研究問題，並說明範圍、搜尋關鍵字與適合的來源類型。先不要寫結論。"],
+ ["尋找原始來源","優先考慮學術研究、官方報告、原始數據與課程教材。",["使用主要關鍵字和同義詞搜尋，記錄作者、日期與出版單位。"],"請為［主題］建立繁體中文與英文搜尋關鍵字，優先推薦學術、官方與原始資料。不要捏造文獻或連結，並說明我該如何逐一查證。"],
+ ["閱讀並評估來源","不要只看標題或摘要；也要檢查方法、樣本、日期與限制。",["確認出版者、證據、可能的利益衝突，以及與研究問題的關聯。"],"請根據我提供的資料，整理研究問題、方法、主要發現、具體證據、限制及與研究問題的關聯。只能使用文件內容；缺少資訊時請明確指出。"],
+ ["整合多個來源","依主題與共識／差異來整理，不要每篇資料只寫一段摘要。",["建立來源—論點—證據—限制的對照矩陣。"],"請根據以下來源筆記建立主題矩陣，整理共同發現、矛盾點、方法差異與研究缺口。每個觀察都要指出由哪些來源支持。"],
+ ["引用與核對","逐一回到原始來源檢查引用，並遵守老師指定的引用格式。",["不要使用尚未開啟的來源，也不要把未確認的句子歸給某篇文獻。"],"請檢查文獻清單與引用內容，列出缺少作者、年份、標題、出版資訊或 URL／DOI 的項目供我查證。沒有資料的部分不要自行補上。"]
+ ]},
+ slides:{title:"建立有邏輯的簡報",intro:"先建立故事線與架構，再開始設計版面。",tool:"ChatGPT",desc:"可協助釐清核心訊息、安排內容並規劃投影片。",reason:"適合用來發展架構與講稿；內容、數據、圖片來源與報告時間仍需自行確認。",links:[['ChatGPT｜簡報架構與講稿','https://chatgpt.com/','ChatGPT | Dàn ý và lời thuyết trình','ChatGPT | Outline and speaker notes'],['Claude｜整理長篇內容','https://claude.ai/','Claude | Tổ chức nội dung dài','Claude | Structure long-form content'],['Gemini｜多模態構思','https://gemini.google.com/','Gemini | Lên ý tưởng đa phương thức','Gemini | Multimodal ideation'],['Canva｜版面與視覺設計','https://www.canva.com/','Canva | Bố cục và thiết kế','Canva | Layout and visual design'],['Gamma｜快速生成簡報','https://gamma.app/','Gamma | Tạo slide nhanh','Gamma | Generate presentation drafts'],['Beautiful.ai｜商務簡報版型','https://www.beautiful.ai/','Beautiful.ai | Mẫu slide kinh doanh','Beautiful.ai | Business presentation layouts']],steps:[
+ ["確認聽眾與目標","簡報應該讓聽眾在結束後理解什麼？",["記下報告時間、聽眾、目標與評分標準。"],"根據這份作業要求，確認簡報目標、聽眾、核心訊息與時間限制。若缺少重要資訊，請先詢問我。"],
+ ["安排故事線","依照背景→問題→分析→建議→結論的邏輯安排內容。",["每張投影片盡量只傳達一個主要訊息。"],"請為［主題］規劃［投影片數量］張簡報。每張包含結論式標題、2–4 個支持要點、需要的證據與轉場句，並避免內容重複。"],
+ ["核對證據","數據、引用與案例都應該有可查證的來源。",["標示已有證據及仍需研究的主張。"],"請檢查這份簡報大綱，標記需要來源支持的主張、缺少的資訊、重複內容與需要補充例子的地方。不要編造數據。"],
+ ["設計版面與講稿","投影片是口頭說明的輔助，不應堆滿整段文字。",["用圖表呈現數據；圖片需相關且有合法使用權。"],"請為每張投影片建議視覺呈現方式，包括圖表或圖片類型、版面與文字量，並依總長度［分鐘］撰寫自然的口頭講稿。"],
+ ["排練與修正","試講、計時，並為可能的提問做好準備。",["檢查錯字、圖片來源、字體大小與整體一致性。"],"請扮演提出問題的老師，針對這份簡報提出 8 個由淺入深的問題，說明每題想檢驗什麼，以及我如何根據證據準備回答。"]
+ ]},
+ video:{title:"規劃影片製作流程",intro:"把構想、腳本、畫面與後製分開，才能選對工具。",tool:"ChatGPT",desc:"可協助發想、撰寫腳本與規劃分鏡。",reason:"先完成企劃與分鏡，再使用影片生成工具。請檢查著作權、人物肖像與平台使用條款。",links:[['ChatGPT｜腳本與分鏡','https://chatgpt.com/','ChatGPT | Kịch bản và storyboard','ChatGPT | Script and storyboard'],['Gemini｜構思與多模態','https://gemini.google.com/','Gemini | Ý tưởng và đa phương thức','Gemini | Ideation and multimodal input'],['Runway｜AI 影片生成','https://runwayml.com/','Runway | Tạo video bằng AI','Runway | AI video generation'],['Pika｜短影片生成','https://pika.art/','Pika | Tạo video ngắn','Pika | Short-form video generation'],['Canva｜影片編排與設計','https://www.canva.com/','Canva | Dàn dựng và thiết kế video','Canva | Video editing and design'],['CapCut｜剪輯與字幕','https://www.capcut.com/','CapCut | Dựng video và phụ đề','CapCut | Editing and captions']],steps:[
+ ["撰寫影片企劃","確認影片目標、受眾、平台、長度、風格與核心訊息。",["用一句話描述影片，再用一句話寫出希望觀眾採取的行動。"],"請協助我完成關於［主題］的影片企劃，受眾是［對象］，長度［秒數］，發布平台［平台］。提出構想前，先問清楚缺少的關鍵條件。"],
+ ["發展腳本","規劃開頭、主要內容與結尾，並確保符合影片長度。",["估計每個鏡頭的秒數，讓台詞讀起來自然。"],"請撰寫一支［秒數］秒的影片腳本，以表格列出時間、畫面、旁白／字幕、聲音與鏡頭目標。不要加入未提供的承諾或事實。"],
+ ["製作分鏡與畫面 Prompt","清楚描述主體、動作、場景、鏡頭、光線與畫面比例。",["不同鏡頭要維持角色、風格與色彩的一致性。"],"請將腳本轉成分鏡表，逐鏡撰寫圖片／影片 Prompt，包含主體、動作、場景、鏡頭角度、運鏡、光線、風格、16:9 比例與應避免的元素。"],
+ ["製作與後製","分別製作素材再進行剪輯，不要期待單一 Prompt 完美完成全部工作。",["確認字幕、音樂授權、使用權與畫面一致性。"],"請為這支影片建立後製檢查清單，包括剪輯節奏、音效、字幕、轉場、品牌識別、著作權與手機觀看效果。"],
+ ["評估最終影片","依最初的企劃評估成效，不只看影片是否漂亮。",["試著關閉聲音觀看，並在小螢幕上檢查。"],"請依照原始企劃評估這支影片，整理評估標準、檢查問題、可能錯誤與修正方式，並區分實際問題與個人偏好。"]
+ ]},
+ data:{title:"負責任地分析資料",intro:"先理解資料，再選擇分析方法與圖表。",tool:"ChatGPT",desc:"可協助解釋公式、撰寫程式並提出分析方法。",reason:"AI 可以提供指引與檢查邏輯，但不能取代資料確認、實際執行公式和驗證結果。",links:[['ChatGPT｜公式與分析步驟','https://chatgpt.com/','ChatGPT | Công thức và quy trình phân tích','ChatGPT | Formulas and analysis steps'],['Claude｜解讀資料與程式','https://claude.ai/','Claude | Diễn giải dữ liệu và code','Claude | Data interpretation and code'],['Gemini｜試算表與多模態','https://gemini.google.com/','Gemini | Bảng tính và đa phương thức','Gemini | Spreadsheets and multimodal work'],['Julius AI｜資料分析與圖表','https://julius.ai/','Julius AI | Phân tích dữ liệu và biểu đồ','Julius AI | Data analysis and charts'],['Google Sheets｜試算表協作','https://sheets.google.com/','Google Sheets | Làm việc với bảng tính','Google Sheets | Spreadsheet collaboration'],['Microsoft Copilot｜Office 工作流程','https://www.microsoft.com/microsoft-365/copilot','Microsoft Copilot | Quy trình Office','Microsoft Copilot | Office workflows']],steps:[
+ ["理解資料結構","確認每列、每欄代表什麼，並檢查缺漏、重複與資料型態。",["保留原始資料，不要自動刪除任何列。"],"請協助檢查這份資料集的結構，說明每欄的意義、資料型態、缺失值、重複值與可能的品質問題。先不要修改或刪除任何資料。"],
+ ["提出分析問題","先決定想回答什麼，不要先做圖表才尋找解釋。",["確認比較變數、群組、時間範圍與測量單位。"],"根據資料的描述，提出 3 個可分析的問題。每題都列出所需變數、合適方法與解釋限制。"],
+ ["選擇分析方法","依照變數型態與研究問題選擇統計方法和圖表。",["檢查單位、樣本數、離群值與方法適用條件。"],"請為問題［問題］建議合適的分析方法，說明假設、需要檢查的條件、可執行的公式或程式，以及獨立驗證結果的方法。"],
+ ["執行並驗證","在真實資料上執行公式或程式，再用簡單方式交叉檢查。",["不要因為 AI 提供數字，就直接相信結果。"],"請用 Excel／Sheets／Python 提供逐步分析指引，解釋每步的目的、需要檢查的中間結果與發現錯誤的方法。"],
+ ["適度解讀結果","區分相關與因果，避免超出資料能支持的範圍。",["說明資料、樣本的限制，以及目前不能得出的結論。"],"請根據這份數據表撰寫結果解讀，分開列出直接觀察、可能解釋與尚不能下的結論。若研究設計不支持因果推論，不要宣稱因果關係。"]
+ ]},
+ writing:{title:"清楚寫作，同時保留自己的觀點",intro:"讓 AI 協助規劃、回饋與修改，而不是取代自己的思考。",tool:"ChatGPT",desc:"可協助建立大綱、檢查邏輯並改善文字表達。",reason:"提供自己的草稿與想法，才能得到具體回饋。請遵守學術規範，並確保自己理解每個論點。",links:[['Claude｜長文與語氣調整','https://claude.ai/','Claude | Văn bản dài và chỉnh giọng văn','Claude | Long-form writing and tone'],['ChatGPT｜大綱與論證','https://chatgpt.com/','ChatGPT | Dàn ý và lập luận','ChatGPT | Outlines and argumentation'],['Gemini｜整合資料與寫作','https://gemini.google.com/','Gemini | Tổng hợp thông tin và viết','Gemini | Synthesis and writing'],['Grammarly｜英文語法與清晰度','https://www.grammarly.com/','Grammarly | Ngữ pháp và độ rõ tiếng Anh','Grammarly | English grammar and clarity'],['DeepL Write｜改寫與語氣','https://www.deepl.com/write','DeepL Write | Viết lại và chỉnh giọng','DeepL Write | Rewriting and tone'],['Perplexity｜查證外部資訊','https://www.perplexity.ai/','Perplexity | Kiểm tra thông tin bên ngoài','Perplexity | Verify external information']],steps:[
+ ["釐清核心論點","用自己的話寫下你想證明或解釋的內容。",["記錄主要想法、理由與現有證據。"],"請透過逐題提問，協助我釐清關於［主題］的文章論點。不要直接替我寫文章；每次回答後整理已釐清與仍缺少的資訊。"],
+ ["規劃文章大綱","每一段都應有主要觀點，並連回整體問題。",["檢查論證順序與缺乏證據的地方。"],"根據我提供的想法，建立包含論點、需尋找的證據與段落銜接的文章大綱。保留原本立場，並標示需要我補充之處。"],
+ ["撰寫初稿","依據來源與已確認的筆記逐段寫作。",["不要要求 AI 製作不存在的引用或未經確認的事實。"],"請依四個標準回饋這份初稿：論點清晰度、邏輯、證據與文字表達。先指出具體問題和例子，不要直接重寫全文。"],
+ ["有目標地修改","每一輪只處理一個主要問題，避免改掉原本的語氣。",["比較修改前後的內容，保留符合自己意思的表達。"],"請把這一段修改得更清楚流暢，但保留原意、學生語氣與原本的確定程度。列出主要修改，不要加入新事實。"],
+ ["檢查學術規範","確認引用、原創性與課程對 AI 使用的規定。",["確保自己能解釋文章內容，並在要求時揭露 AI 協助。"],"請依照作業要求建立寫作檢查清單，檢視來源、引用、邏輯、表達與 AI 使用規範。只指出草稿中有依據的問題。"]
+ ]},
+ language:{title:"主動學習翻譯與語言",intro:"不只是把文字翻譯完，也要理解語氣、術語與實際用法。",tool:"ChatGPT",desc:"可解釋語境、比較不同說法並建立練習題。",reason:"適合練習多種句型並理解用詞原因。重要文件仍應核對專業術語，必要時請專業人士審閱。",links:[['ChatGPT｜語言解釋與對話練習','https://chatgpt.com/','ChatGPT | Giải thích ngôn ngữ và luyện hội thoại','ChatGPT | Language explanations and dialogue practice'],['Gemini｜多模態語言練習','https://gemini.google.com/','Gemini | Luyện ngôn ngữ đa phương thức','Gemini | Multimodal language practice'],['DeepL｜翻譯','https://www.deepl.com/translator','DeepL | Dịch thuật','DeepL | Translation'],['DeepL Write｜自然表達','https://www.deepl.com/write','DeepL Write | Diễn đạt tự nhiên','DeepL Write | Natural phrasing'],['Grammarly｜英文校對','https://www.grammarly.com/','Grammarly | Hiệu đính tiếng Anh','Grammarly | English proofreading'],['Claude｜長文翻譯與語境','https://claude.ai/','Claude | Dịch văn bản dài theo ngữ cảnh','Claude | Context-aware long-form translation']],steps:[
+ ["確認翻譯目的","學術文章、給老師的訊息與行銷內容，適合的語氣都不同。",["說明來源語言、目標語言、讀者、正式程度與需保留的術語。"],"請將以下內容從［來源語言］翻譯成［目標語言］，讀者是［對象］，語氣為［正式程度］。保留原意與專有名稱，並標出可能有多種譯法的地方。"],
+ ["比較不同表達","請 AI 解釋容易混淆的詞組與選用理由。",["不要只選聽起來漂亮的翻譯，也要確認意思沒有改變。"],"請提供兩個譯本：一個較貼近原文、一個較自然。針對重要詞組解釋語氣、使用情境與差異，不要自行增添內容。"],
+ ["確認專業術語","與課程教材或可信來源比對專業用語。",["建立原文術語、譯文、定義與例句的對照表。"],"請整理這段內容中的專業術語，列出原文、建議譯法、定義與例句。若不確定標準譯法，請標示出來讓我對照教材。"],
+ ["練習實際使用","請 AI 提供新例句和問題，確認自己是否真正理解。",["先自己回答，再查看解釋。"],"請教我這段內容中的 5 個重要詞組。用簡單語言解釋、提供一個新例句，再問我一道練習題。先不要立即給答案。"],
+ ["檢查最終版本","通讀全文，確認語氣、文法與意思一致。",["檢查數據、專有名稱、敬語與格式。"],"請從準確度、自然度、語氣及術語一致性檢查這份翻譯，指出需要修改的句子、原因與建議版本。"]
+ ]},
+ study:{title:"真正理解課程內容的考試複習",intro:"把教材轉換成解釋、練習題與具體回饋。",tool:"ChatGPT",desc:"可用不同方式解釋概念、生成題目並檢查理解程度。",reason:"請 AI 一步步教學，並先讓自己嘗試回答。仍需對照課本，因為 AI 可能出錯或過度簡化。",links:[['ChatGPT｜逐步教學與測驗','https://chatgpt.com/','ChatGPT | Hướng dẫn từng bước và quiz','ChatGPT | Step-by-step tutoring and quizzes'],['Claude｜解釋複雜概念','https://claude.ai/','Claude | Giải thích khái niệm phức tạp','Claude | Explain complex concepts'],['Gemini｜圖片與課堂資料','https://gemini.google.com/','Gemini | Hình ảnh và tài liệu lớp học','Gemini | Images and class materials'],['NotebookLM｜依課程資料複習','https://notebooklm.google.com/','NotebookLM | Ôn tập theo tài liệu môn học','NotebookLM | Study from course materials'],['Quizlet｜記憶卡與練習','https://quizlet.com/','Quizlet | Thẻ ghi nhớ và luyện tập','Quizlet | Flashcards and practice'],['Khanmigo｜學習引導','https://www.khanmigo.ai/','Khanmigo | Hướng dẫn học tập','Khanmigo | Learning guidance']],steps:[
+ ["找出不懂的部分","一次選一個概念或題型，不要一開始就要求解釋整章。",["說明你目前理解的內容，以及卡住的地方。"],"請用適合初學大學生的方式解釋［概念］。先問我目前理解到哪裡，再用簡單例子說明，並指出一個常見誤解。"],
+ ["透過例題學習","先看逐步示範，再試著完成類似題目，不要立刻看解答。",["確認每一步為什麼合理。"],"請針對［主題］示範一道題目，逐步解釋每個步驟的原因。接著給我一道相似題讓我自己做，先不要透露答案。"],
+ ["自我測驗","使用選擇題、簡答題，並檢查錯誤選項為什麼錯。",["混合簡單、中等與應用題。"],"請為［主題］設計 8 道由易到難的練習題，一次只問一題。等我回答後，再給回饋與解釋。"],
+ ["補足知識漏洞","把錯誤分成概念混淆、步驟錯誤或讀題問題。",["記錄錯誤類型與避免重犯的原則。"],"請根據我的錯誤回答找出知識漏洞，不要批評我。簡短解釋正確觀念，提供對照例子，再出一道題讓我練習。"],
+ ["主動複習","建立記憶卡與複習節奏，而不是只重讀筆記。",["試著用自己的話解釋概念。"],"請把我提供的筆記轉成記憶卡，包含問題、簡短答案、例子與常見錯誤。只能使用筆記中的內容，並標示資訊不足的部分。"]
+ ]}
+};
+let currentTask="case";
+$("modelCategory").addEventListener("change",renderModelChoice);
+$("languageSelect").addEventListener("change",e=>applyLanguage(e.target.value));
+
+function goTo(id){$(id).scrollIntoView({behavior:"smooth",block:"start"});document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.scroll===id))}
+document.querySelectorAll(".nav button").forEach(b=>b.addEventListener("click",()=>goTo(b.dataset.scroll)));
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200)}
+function renderPlan(){
+ const d=data[currentTask];$("planTitle").textContent=d.title;$("planIntro").textContent=d.intro;$("toolName").textContent=d.tool;$("toolDesc").textContent=d.desc;$("toolReason").textContent=d.reason;
+ const lang=currentLanguage||"zh";
+ const labelMap={zh:"更多 AI 工具（依強項選擇）",vi:"Các công cụ AI khác (chọn theo thế mạnh)",en:"More AI tools (choose by strength)"};
+ $("toolLinksLabel").textContent=labelMap[lang]||labelMap.zh;
+ $("toolLinks").innerHTML=d.links.map(x=>{const label=x[lang==="vi"?2:lang==="en"?3:0]||x[0];return `<a href="${x[1]}" target="_blank" rel="noopener noreferrer" aria-label="${label}">${label} ↗</a>`}).join("");
+ const level=$("level").value;let startIndex=level==="start"?0:level==="research"?1:level==="draft"?3:4;
+ $("steps").innerHTML=d.steps.map((s,i)=>`<article class="step ${i===startIndex?"open":""}" data-index="${i}"><div class="step-head" role="button" tabindex="0" aria-expanded="${i===startIndex}"><span class="step-num">${i+1}</span><span><b>${s[0]}</b><small>${i===startIndex?"建議從這裡開始":"點擊查看說明"}</small></span><span class="chevron">${i===startIndex?"−":"＋"}</span></div><div class="step-body"><p>${s[1]}</p><ul>${s[2].map(x=>`<li>${x}</li>`).join("")}</ul><div class="example"><strong>這一步的 Prompt 範例</strong>${s[3]}</div><button class="btn small use-step-prompt" data-prompt="${encodeURIComponent(s[3])}">使用這個 Prompt ↗</button><div class="tip"><b>進入下一步前：</b>請自行檢查結果、標記需要驗證的資訊，並決定哪些內容真正有助於你的作業。</div></div></article>`).join("");
+ document.querySelectorAll(".step-head").forEach(h=>{const toggle=()=>{const card=h.closest(".step");card.classList.toggle("open");h.setAttribute("aria-expanded",card.classList.contains("open"));h.querySelector(".chevron").textContent=card.classList.contains("open")?"−":"＋"};h.addEventListener("click",toggle);h.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle()}})});
+ document.querySelectorAll(".use-step-prompt").forEach(b=>b.addEventListener("click",()=>{$("pTask").value=promptTaskMap[currentTask]||"分析個案";$("pContext").value=$("assignment").value||"";$("pConstraints").value="只處理目前這個步驟，不要捏造事實或來源。若資訊不足請先提問，並列出我需要自行查證的部分。";generatePrompt(decodeURIComponent(b.dataset.prompt));goTo("promptlab")}));
+}
+const promptTaskMap={case:"分析個案",research:"搜尋與整理文獻",slides:"規劃簡報大綱",video:"撰寫影片腳本",data:"分析資料",writing:"修改初稿",language:"翻譯並解釋術語",study:"解釋課程概念"};
+document.querySelectorAll(".task-option").forEach(b=>b.addEventListener("click",()=>{currentTask=b.dataset.task;document.querySelectorAll(".task-option").forEach(x=>x.classList.toggle("selected",x===b));renderPlan()}));
+$("buildPlan").addEventListener("click",()=>{renderPlan();applyLanguage(currentLanguage);toast(currentLanguage==='vi'?"Đã cập nhật quy trình học tập.":currentLanguage==='en'?"Workflow updated.":"已更新你的任務流程。");$("planPanel").scrollIntoView({behavior:"smooth",block:"start"})});
+$("level").addEventListener("change",renderPlan);
+function applyPromptControlsLanguage(lang){
+ const sets={
+  zh:{
+   stageLabel:"目前進度",stage:["我還不知道從哪裡開始","我正在進行任務","我已有草稿，想改善","我想在提交前檢查"],
+   approachLabel:"希望 AI 怎麼協助你？",approach:["教練：引導我自己思考","合作夥伴：一起分析與反駁","助理：協助整理初稿","評審：嚴格檢查與指出問題"],
+   depthLabel:"需要的深度",depth:["簡單易懂","詳細並解釋原因","深入分析與批判"],
+   interactionLabel:"互動方式",interaction:["先問我問題再開始","一次帶我完成一個步驟","先給結構化成果，再解釋"]
+  },
+  vi:{
+   stageLabel:"Bạn đang ở giai đoạn nào?",stage:["Chưa biết bắt đầu từ đâu","Đang thực hiện nhiệm vụ","Đã có bản nháp, muốn cải thiện","Muốn kiểm tra trước khi nộp"],
+   approachLabel:"Bạn muốn AI hỗ trợ theo cách nào?",approach:["Huấn luyện: hướng dẫn tôi tự suy nghĩ","Đối tác: cùng phân tích và phản biện","Trợ lý: giúp sắp xếp bản nháp","Người phản biện: kiểm tra nghiêm ngặt"],
+   depthLabel:"Mức độ chi tiết",depth:["Đơn giản, dễ hiểu","Chi tiết và giải thích lý do","Phân tích chuyên sâu và phản biện"],
+   interactionLabel:"Cách tương tác",interaction:["Hỏi tôi trước khi bắt đầu","Hướng dẫn từng bước một","Đưa kết quả có cấu trúc trước, rồi giải thích"]
+  },
+  en:{
+   stageLabel:"What stage are you at?",stage:["I don't know where to start","I'm working on the task","I have a draft to improve","I want to check before submitting"],
+   approachLabel:"How should AI help?",approach:["Coach: guide my own thinking","Partner: analyze and challenge ideas with me","Assistant: organize a draft","Reviewer: rigorously find problems"],
+   depthLabel:"Level of depth",depth:["Simple and accessible","Detailed with explanations","In-depth analysis and critique"],
+   interactionLabel:"Interaction style",interaction:["Ask me questions first","Guide me one step at a time","Give structured output first, then explain"]
+  }
+ };
+ const s=sets[lang]||sets.zh;
+ [["pStageLabel",s.stageLabel],["pApproachLabel",s.approachLabel],["pDepthLabel",s.depthLabel],["pInteractionLabel",s.interactionLabel]].forEach(([id,v])=>{if($(id))$(id).textContent=v});
+ [["pStage",s.stage],["pApproach",s.approach],["pDepth",s.depth],["pInteraction",s.interaction]].forEach(([id,opts])=>{const el=$(id);if(el)Array.from(el.options).forEach((o,i)=>{if(opts[i])o.textContent=opts[i]})});
+}
+function generatePrompt(extra){
+ const lang=currentLanguage||"zh";
+ const taskValue=$("pTask").value;
+ const taskKey=({"個案分析":"case","分析個案":"case","搜尋與整理文獻":"research","搜尋與整理文獻資料":"research","規劃簡報大綱":"slides","分析資料":"data","解釋課程概念":"study","修改初稿":"writing","撰寫影片腳本":"video","翻譯並解釋術語":"language"})[taskValue]||({"case":"case","research":"research","slides":"slides","video":"video","data":"data","writing":"writing","language":"language","study":"study"})[currentTask]||"case";
+ const context=$("pContext").value.trim()||({zh:"［請補充背景／貼上作業要求］",vi:"[Bổ sung bối cảnh / dán yêu cầu bài tập]",en:"[Add context / paste the assignment brief]"}[lang]);
+ const role=$("pRole").value.trim()||({zh:"學術助教",vi:"trợ giảng học thuật",en:"academic teaching assistant"}[lang]);
+ const audience=$("pAudience").value.trim()||({zh:"大學生",vi:"sinh viên đại học",en:"university students"}[lang]);
+ const format=$("pFormat").selectedOptions[0]?.textContent||$("pFormat").value;
+ const constraints=$("pConstraints").value.trim()||({zh:"不要捏造事實；清楚標示不確定之處。",vi:"Không bịa đặt sự kiện; nêu rõ điểm chưa chắc chắn.",en:"Do not invent facts; clearly flag uncertainty."}[lang]);
+ const stage=$("pStage")?.value||"improve", approach=$("pApproach")?.value||"coach", depth=$("pDepth")?.value||"detailed", interaction=$("pInteraction")?.value||"step";
+ const L={
+  zh:{
+   tasks:{case:"個案分析",research:"研究與文獻搜尋",slides:"簡報規劃",video:"影片企劃與腳本",data:"資料分析",writing:"報告寫作與修改",language:"翻譯與術語理解",study:"課程理解與考試複習"},
+   stages:{start:"先拆解題目與釐清目標，不要直接產出完整答案。",work:"專注完成目前這個階段，先說明方法，再逐步執行。",improve:"先診斷現有草稿或成果的具體問題，再提出有優先順序的修改建議。",check:"依照要求與評估標準逐項檢查，指出證據、錯誤、缺漏與尚未確認之處。"},
+   approaches:{coach:"採用教練方式：用問題和提示幫我建立自己的理解，不要直接替我做完。",partner:"採用合作夥伴方式：與我共同推理，提出替代解釋、反例與反方觀點。",draft:"採用助理方式：整理我提供的材料並建立可編輯的初稿，所有未確認內容都要標記。",review:"採用嚴格評審方式：直接指出薄弱論點、邏輯跳躍、缺少證據與優先修正項目。"},
+   depths:{simple:"使用簡單語言，避免不必要術語，先給最重要的答案。",detailed:"提供具體步驟、理由、例子與必要的限制說明。",expert:"深入分析假設、方法、證據強度、反例、限制與替代方案。"},
+   interactions:{ask:"開始前先問最多 3 個真正影響結果的澄清問題；收到回答後再繼續。",step:"一次只處理一個步驟，每步結束後告訴我如何判斷是否可以進入下一步。",deliver:"先給結構化成果，再解釋決策理由、假設與我需要確認的地方。"},
+   workflow:{
+    case:"個案分析：整理背景與核心問題 → 區分案例事實和假設 → 分析根本原因與利害關係人 → 比較方案及取捨 → 以證據支持建議。",
+    research:"研究流程：縮小研究問題 → 建立搜尋詞與來源策略 → 評估來源品質與方法 → 跨來源整合共識和矛盾 → 標記研究缺口並核對引用。",
+    slides:"簡報流程：確認聽眾與單一核心訊息 → 建立故事線 → 為每張投影片設定結論式標題與證據 → 建議視覺形式 → 撰寫講稿並檢查時間。",
+    video:"影片流程：確認受眾、平台與目標 → 設計開頭鉤子和核心訊息 → 撰寫時間軸腳本 → 建立分鏡與視覺提示 → 檢查節奏、字幕、授權和一致性。",
+    data:"資料分析流程：檢查欄位、缺漏、重複和型態 → 明確提出可回答的問題 → 選擇符合資料與假設的方法 → 執行並交叉驗證 → 區分觀察、推論與因果限制。",
+    writing:"寫作流程：確認自己的核心觀點 → 檢查大綱與論證順序 → 對照證據和引用 → 逐項修改清晰度與語氣 → 最後檢查學術規範。",
+    language:"翻譯流程：確認語境、讀者和語氣 → 保留原意與專有名詞 → 比較直譯與自然譯法 → 解釋術語和歧義 → 校對一致性。",
+    study:"學習流程：確認我已懂和不懂的部分 → 用簡單例子解釋概念 → 示範一題並說明理由 → 給我獨立練習 → 根據錯誤調整複習。"
+   }
+  },
+  vi:{
+   tasks:{case:"phân tích case study",research:"nghiên cứu và tìm tài liệu",slides:"lập kế hoạch thuyết trình",video:"lên ý tưởng và viết kịch bản video",data:"phân tích dữ liệu",writing:"viết và chỉnh sửa báo cáo",language:"dịch thuật và hiểu thuật ngữ",study:"hiểu bài và ôn thi"},
+   stages:{start:"Trước tiên hãy phân tích đề và làm rõ mục tiêu; chưa viết ngay câu trả lời hoàn chỉnh.",work:"Tập trung vào giai đoạn hiện tại, giải thích phương pháp rồi mới thực hiện từng bước.",improve:"Chẩn đoán vấn đề cụ thể trong bản nháp hiện tại trước, sau đó đề xuất chỉnh sửa theo mức độ ưu tiên.",check:"Đối chiếu từng yêu cầu và tiêu chí đánh giá; chỉ ra bằng chứng, lỗi, phần thiếu và điều chưa xác minh."},
+   approaches:{coach:"Đóng vai người hướng dẫn: dùng câu hỏi và gợi ý để tôi tự hiểu, không làm thay toàn bộ.",partner:"Đóng vai cộng sự: cùng suy luận, đưa ra cách giải thích thay thế, phản ví dụ và quan điểm trái chiều.",draft:"Đóng vai trợ lý: sắp xếp tài liệu tôi cung cấp thành bản nháp có thể chỉnh sửa; đánh dấu mọi nội dung chưa xác minh.",review:"Đóng vai người phản biện nghiêm khắc: chỉ rõ lập luận yếu, bước nhảy logic, thiếu bằng chứng và việc cần sửa trước."},
+   depths:{simple:"Dùng ngôn ngữ đơn giản, hạn chế thuật ngữ không cần thiết và nêu ý quan trọng nhất trước.",detailed:"Đưa ra các bước cụ thể, lý do, ví dụ và những giới hạn cần thiết.",expert:"Phân tích sâu các giả định, phương pháp, độ mạnh của bằng chứng, phản ví dụ, giới hạn và phương án thay thế."},
+   interactions:{ask:"Trước khi bắt đầu, hỏi tối đa 3 câu thực sự ảnh hưởng đến kết quả; chờ tôi trả lời rồi mới tiếp tục.",step:"Chỉ xử lý một bước mỗi lần; cuối mỗi bước, hướng dẫn cách xác định khi nào có thể chuyển tiếp.",deliver:"Đưa kết quả có cấu trúc trước, sau đó giải thích lý do, giả định và phần tôi cần xác nhận."},
+   workflow:{
+    case:"Quy trình case study: tóm tắt bối cảnh và vấn đề cốt lõi → phân biệt dữ kiện với giả định → phân tích nguyên nhân và bên liên quan → so sánh phương án và đánh đổi → đề xuất có bằng chứng hỗ trợ.",
+    research:"Quy trình nghiên cứu: thu hẹp câu hỏi → lập từ khóa và chiến lược tìm nguồn → đánh giá chất lượng nguồn và phương pháp → tổng hợp điểm đồng thuận, mâu thuẫn giữa các nguồn → nêu khoảng trống và kiểm tra trích dẫn.",
+    slides:"Quy trình slide: xác định khán giả và thông điệp chính → xây dựng mạch trình bày → đặt tiêu đề kết luận và bằng chứng cho từng slide → đề xuất hình ảnh → viết lời nói và kiểm tra thời lượng.",
+    video:"Quy trình video: xác định người xem, nền tảng và mục tiêu → tạo câu mở đầu thu hút → viết kịch bản theo thời gian → lập storyboard và prompt hình ảnh → kiểm tra nhịp, phụ đề, bản quyền và tính nhất quán.",
+    data:"Quy trình dữ liệu: kiểm tra cột, giá trị thiếu, trùng lặp và kiểu dữ liệu → xác định câu hỏi có thể trả lời → chọn phương pháp phù hợp với dữ liệu và giả định → thực hiện và kiểm tra chéo → phân biệt quan sát, suy luận và giới hạn nhân quả.",
+    writing:"Quy trình viết: xác định quan điểm của tôi → kiểm tra dàn ý và trình tự lập luận → đối chiếu bằng chứng, trích dẫn → sửa độ rõ ràng và giọng văn từng lượt → kiểm tra quy định học thuật.",
+    language:"Quy trình dịch: xác định ngữ cảnh, người đọc và sắc thái → giữ nguyên ý và thuật ngữ → so sánh bản sát nghĩa và bản tự nhiên → giải thích thuật ngữ và điểm mơ hồ → soát tính nhất quán.",
+    study:"Quy trình học: xác định phần tôi đã hiểu và chưa hiểu → giải thích bằng ví dụ đơn giản → làm mẫu một câu và giải thích lý do → cho tôi tự luyện → điều chỉnh ôn tập theo lỗi sai."
+   }
+  },
+  en:{
+   tasks:{case:"case study analysis",research:"research and literature discovery",slides:"presentation planning",video:"video concept and script writing",data:"data analysis",writing:"report writing and revision",language:"translation and terminology learning",study:"concept learning and exam preparation"},
+   stages:{start:"First unpack the brief and clarify the goal; do not jump straight to a complete answer.",work:"Focus on the current stage, explain the method, then work through it step by step.",improve:"Diagnose specific issues in the current draft or work first, then prioritize improvements.",check:"Audit each requirement and rubric criterion; identify evidence, errors, omissions, and unverified claims."},
+   approaches:{coach:"Act as a coach: use questions and hints to build my understanding rather than doing the whole task for me.",partner:"Act as a thinking partner: reason with me and offer alternative explanations, counterexamples, and opposing views.",draft:"Act as an assistant: organize the materials I provide into an editable draft and label anything unverified.",review:"Act as a rigorous reviewer: point out weak arguments, logical gaps, missing evidence, and the highest-priority fixes."},
+   depths:{simple:"Use plain language, avoid unnecessary jargon, and lead with the most important point.",detailed:"Provide concrete steps, reasons, examples, and relevant limitations.",expert:"Analyze assumptions, methods, evidence strength, counterexamples, limitations, and alternatives in depth."},
+   interactions:{ask:"Before starting, ask up to three clarifying questions that materially affect the result. Wait for my answers before proceeding.",step:"Handle one step at a time; at the end of each step, tell me how to decide whether to move on.",deliver:"Provide structured output first, then explain the reasoning, assumptions, and what I need to verify."},
+   workflow:{
+    case:"Case workflow: summarize context and core issue → separate case facts from assumptions → analyze root causes and stakeholders → compare options and trade-offs → make an evidence-backed recommendation.",
+    research:"Research workflow: narrow the question → build search terms and a source strategy → assess source quality and methods → synthesize agreement and disagreement across sources → identify gaps and verify citations.",
+    slides:"Presentation workflow: define audience and key message → build a narrative → give each slide a takeaway title and supporting evidence → suggest visuals → draft speaker notes and check timing.",
+    video:"Video workflow: define audience, platform, and goal → create a hook and key message → write a timed script → develop storyboard and visual prompts → check pacing, captions, rights, and consistency.",
+    data:"Data workflow: inspect columns, missing values, duplicates, and types → define answerable questions → choose a method that fits the data and assumptions → execute and cross-check → distinguish observations, inferences, and causal limits.",
+    writing:"Writing workflow: clarify my own position → check outline and argument sequence → align claims with evidence and citations → revise clarity and tone in focused passes → check academic requirements.",
+    language:"Translation workflow: identify context, reader, and tone → preserve meaning and terms → compare literal and natural versions → explain terminology and ambiguity → proofread consistency.",
+    study:"Study workflow: identify what I do and do not understand → explain with a simple example → model one problem with reasoning → give me independent practice → adapt revision to my errors."
+   }
+  }
+ };
+ const c=L[lang]||L.zh, task=c.tasks[taskKey]||$("pTask").selectedOptions[0]?.textContent||$("pTask").value;
+ const requested=task;
+ const stepInstruction=extra ? (lang==="zh" ? "\\n\\n目前要處理的具體步驟\\n"+extra : lang==="vi" ? "\\n\\nBƯỚC CỤ THỂ CẦN XỬ LÝ\\n"+extra : "\\n\\nSPECIFIC STEP TO WORK ON\\n"+extra) : "";
+ const prompt= lang==="zh" ?
+`請使用自然的繁體中文回答。
+
+任務與目標
+${requested}${stepInstruction}
+
+背景／作業要求
+${context}
+
+你的角色
+${role}。回答對象：${audience}。
+
+目前階段
+${c.stages[stage]}
+
+互動方式
+${c.interactions[interaction]}
+
+協作方式
+${c.approaches[approach]}
+
+任務專屬工作流程
+${c.workflow[taskKey]||c.workflow.case}
+
+分析深度
+${c.depths[depth]}
+
+輸出格式
+${format}
+
+條件與評估標準
+${constraints}
+
+品質控制
+- 區分已知事實、推論、假設與未知資訊。
+- 不得捏造數據、引用、來源或我未提供的個人經驗。
+- 若依據不足，明確說明限制，不要把猜測寫成事實。
+- 先完成當前目標，不要無故擴展成整份作業。
+- 回答結尾列出需要我確認的事項，以及下一個可執行步驟。` :
+ lang==="vi" ?
+`Hãy trả lời bằng tiếng Việt tự nhiên.
+
+NHIỆM VỤ VÀ MỤC TIÊU
+${requested}${stepInstruction}
+
+BỐI CẢNH / YÊU CẦU BÀI TẬP
+${context}
+
+VAI TRÒ
+Bạn là ${role}. Đối tượng đọc: ${audience}.
+
+GIAI ĐOẠN HIỆN TẠI
+${c.stages[stage]}
+
+CÁCH TƯƠNG TÁC
+${c.interactions[interaction]}
+
+CÁCH PHỐI HỢP
+${c.approaches[approach]}
+
+QUY TRÌNH RIÊNG CHO NHIỆM VỤ NÀY
+${c.workflow[taskKey]||c.workflow.case}
+
+MỨC ĐỘ PHÂN TÍCH
+${c.depths[depth]}
+
+ĐỊNH DẠNG ĐẦU RA
+${format}
+
+ĐIỀU KIỆN VÀ TIÊU CHÍ ĐÁNH GIÁ
+${constraints}
+
+KIỂM SOÁT CHẤT LƯỢNG
+- Phân biệt dữ kiện đã biết, suy luận, giả định và thông tin chưa rõ.
+- Không bịa số liệu, trích dẫn, nguồn hoặc trải nghiệm cá nhân tôi chưa cung cấp.
+- Nếu thiếu căn cứ, hãy nói rõ giới hạn; không trình bày phỏng đoán như sự thật.
+- Chỉ hoàn thành mục tiêu hiện tại, không tự mở rộng thành toàn bộ bài tập.
+- Cuối câu trả lời, liệt kê điều tôi cần xác nhận và bước tiếp theo có thể thực hiện.` :
+`Respond in natural English.
+
+TASK AND GOAL
+${requested}${stepInstruction}
+
+CONTEXT / ASSIGNMENT REQUIREMENTS
+${context}
+
+ROLE
+You are ${role}. Intended audience: ${audience}.
+
+CURRENT STAGE
+${c.stages[stage]}
+
+INTERACTION STYLE
+${c.interactions[interaction]}
+
+COLLABORATION MODE
+${c.approaches[approach]}
+
+WORKFLOW SPECIFIC TO THIS TASK
+${c.workflow[taskKey]||c.workflow.case}
+
+DEPTH
+${c.depths[depth]}
+
+OUTPUT FORMAT
+${format}
+
+CONSTRAINTS AND EVALUATION CRITERIA
+${constraints}
+
+QUALITY CONTROL
+- Distinguish known facts, inferences, assumptions, and unknowns.
+- Do not invent data, citations, sources, or personal experiences I have not provided.
+- If evidence is insufficient, state the limitation instead of presenting guesses as facts.
+- Complete the current goal only; do not expand it into the entire assignment without reason.
+- End by listing what I need to verify and the next actionable step.`;
+ $("promptResult").textContent=prompt;
+}
+["pTask","pStage","pApproach","pDepth","pInteraction","pFormat"].forEach(id=>$(id).addEventListener("change",()=>generatePrompt()));
+$("generatePrompt").addEventListener("click",()=>{generatePrompt();toast(currentLanguage==='vi'?"Đã tạo Prompt theo thông tin bạn nhập.":currentLanguage==='en'?"Prompt generated from your inputs.":"已依照你輸入的資訊產生 Prompt。")});
+$("copyPrompt").addEventListener("click",async()=>{await copyText($("promptResult").textContent,"已複製 Prompt。")});
+$("copyVerify").addEventListener("click",async()=>{await copyText($("verifyPrompt").textContent,"已複製查證 Prompt。")});
+async function copyText(text,msg){try{await navigator.clipboard.writeText(text);toast(msg)}catch(e){const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();toast(msg)}}
+$("downloadPrompt").addEventListener("click",()=>{const blob=new Blob([$("promptResult").textContent],{type:"text/plain;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="UniAi_Prompt.txt";a.click();URL.revokeObjectURL(url);toast("已下載 .txt 檔案。")});
+$("resetPrompt").addEventListener("click",()=>{$("pContext").value="";$("pRole").value="具備批判思考能力的大學助教";$("pAudience").value="大學生，基礎程度";$("pConstraints").value="使用清楚易懂的語言。不要捏造數據或參考來源。若資料不足，請先詢問或明確說明假設。";$("pTask").selectedIndex=0;$("pFormat").selectedIndex=0;if($("pStage"))$("pStage").value="improve";if($("pApproach"))$("pApproach").value="coach";if($("pDepth"))$("pDepth").value="detailed";if($("pInteraction"))$("pInteraction").value="step";generatePrompt();toast(currentLanguage==="vi"?"Đã đặt lại biểu mẫu.":currentLanguage==="en"?"Form reset.":"表單已重設。")});
+function updateChecks(){const boxes=[...$("checklist").querySelectorAll("input")],n=boxes.filter(x=>x.checked).length;$("verifyProgress").style.width=(n/boxes.length*100)+"%";$("verifyCount").textContent=`已完成 ${n}/${boxes.length} 項`;}
+$("checklist").addEventListener("change",updateChecks);$("resetChecks").addEventListener("click",()=>{$("checklist").querySelectorAll("input").forEach(x=>x.checked=false);updateChecks();toast("已重設檢核清單。")});
+renderPlan();generatePrompt();updateChecks();renderModelChoice();applyLanguage((()=>{try{return localStorage.getItem("uniai-language")||"zh"}catch(_e){return "zh"}})());
+
+// AI 助理：透過伺服器 API 呼叫模型，API key 不會暴露在瀏覽器中。
+let aiHistory=[];let aiLastAnswer='';
+const aiMessages=document.getElementById('aiMessages');
+function addAiMessage(text,role){const node=document.createElement('div');node.className='ai-msg '+role;node.textContent=text;aiMessages.appendChild(node);aiMessages.scrollTop=aiMessages.scrollHeight;return node;}
+document.querySelectorAll('[data-fill]').forEach(b=>b.addEventListener('click',()=>{const box=document.getElementById('aiInput');box.value=b.dataset.fill+box.value;box.focus();}));
+async function sendAi(){const input=document.getElementById('aiInput');const question=input.value.trim();if(!question){document.getElementById('aiStatus').textContent=tr('請先輸入問題或作業要求。','Vui lòng nhập câu hỏi hoặc yêu cầu bài tập trước.','Enter a question or assignment brief first.');input.focus();return;}const mode=document.getElementById('aiMode').value;const style=document.getElementById('aiStyle').value;addAiMessage(question,'user');input.value='';input.disabled=true;document.getElementById('aiSend').disabled=true;document.getElementById('aiStatus').textContent=tr('UniAi 正在產生回答……','UniAi đang tạo câu trả lời…','UniAi is generating a response…');const loading=addAiMessage(tr('正在整理問題並準備回答……','Đang phân tích câu hỏi và chuẩn bị trả lời…','Organizing the question and preparing an answer…'),'assistant');try{const res=await fetch('/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:question,mode,style,language:currentLanguage,history:aiHistory.slice(-8)})});const data=await res.json();if(!res.ok)throw new Error(data.error||tr('無法連接 AI。','Không thể kết nối AI.','Could not connect to AI.'));loading.textContent=data.answer||tr('AI 沒有傳回內容，請再試一次。','AI chưa trả về nội dung. Vui lòng thử lại.','AI returned no content. Please try again.');aiLastAnswer=loading.textContent;aiHistory.push({role:'user',content:question},{role:'assistant',content:aiLastAnswer});document.getElementById('aiStatus').textContent=tr('已收到 AI 回答。使用前請確認重要事實與來源。','Đã nhận được câu trả lời AI. Hãy kiểm tra sự kiện và nguồn quan trọng trước khi sử dụng.','AI response received. Verify important facts and sources before using it.');}catch(err){loading.textContent=tr('目前無法產生回答。','Hiện chưa thể tạo câu trả lời.','Unable to generate a response right now.')+' '+err.message+'\n\n'+tr('請確認伺服器正在執行，且 .env 已設定 OPENAI_API_KEY。','Hãy kiểm tra máy chủ đang chạy và OPENAI_API_KEY đã được thiết lập trong .env.','Check that the server is running and OPENAI_API_KEY is configured in .env.');document.getElementById('aiStatus').textContent=tr('AI 連線失敗。','Kết nối AI thất bại.','AI connection failed.');}finally{input.disabled=false;document.getElementById('aiSend').disabled=false;input.focus();}}
+document.getElementById('aiSend').addEventListener('click',sendAi);document.getElementById('aiInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAi();}});
+document.getElementById('aiClear').addEventListener('click',()=>{aiHistory=[];aiLastAnswer='';aiMessages.innerHTML='';addAiMessage(tr('對話已重設。你想從哪一個學習任務開始？','Đã đặt lại cuộc trò chuyện. Bạn muốn bắt đầu với nhiệm vụ học tập nào?','Conversation reset. Which study task would you like to start with?'),'assistant');document.getElementById('aiStatus').textContent='';});
+document.getElementById('aiCopyLast').addEventListener('click',()=>{if(!aiLastAnswer){document.getElementById('aiStatus').textContent='目前沒有可複製的回答。';return;}copyText(aiLastAnswer,'已複製 AI 回答。');});
+</script>
+</body>
+</html>
